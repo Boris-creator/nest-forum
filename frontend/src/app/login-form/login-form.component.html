@@ -1,0 +1,5 @@
+<div>
+    <input [(ngModel)] = "email">
+    <button [disabled]="errors.email" (click)="submitForm()">click me</button>
+    <div *ngIf="errors.email">{{errors.email?.message}}</div>
+</div>

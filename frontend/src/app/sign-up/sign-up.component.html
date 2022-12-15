@@ -1,0 +1,41 @@
+<div>
+  <div [ngSwitch]="step">
+    <div *ngSwitchCase="0">
+      <input [(ngModel)]="email" />
+      <div *ngIf="errors.email">{{ errors.email.message }}</div>
+    </div>
+    <div *ngSwitchCase="1">
+      <input [(ngModel)]="password" type="password" />
+      <div *ngIf="errors.password">{{ errors.password.message }}</div>
+
+      <input [(ngModel)]="password_2" type="password" />
+      <div *ngIf="errors.password_2">{{ errors.password_2.message }}</div>
+    </div>
+
+    <div *ngSwitchCase="2">
+      <input [(ngModel)]="login" />
+      <div *ngIf="errors.login">{{ errors.login.message }}</div>
+    </div>
+  </div>
+  <div>
+    <button
+      *ngIf="step > 0;"
+      (click)="previousStep()"
+    >
+      back
+    </button>
+    <button
+      *ngIf="step < 2; else submit"
+      [disabled]="stepCorrect"
+      (click)="nextStep()"
+    >
+      next
+    </button>
+    <ng-template #submit>
+      <button [disabled]="errors.login" (click)="submitForm()">
+        click me
+      </button>
+      <div *ngIf="errors.exists">{{ errors.exists.message }}</div>
+    </ng-template>
+  </div>
+</div>
