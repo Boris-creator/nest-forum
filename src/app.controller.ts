@@ -14,6 +14,6 @@ export class AppController {
   }
   @Get("/")
   send(@Req() req: Request, @Res() res: Response) {
-    res.sendFile(join(__dirname, "..", "..", "frontend", "dist", "frontend", "index.html"));
+    res.sendFile(join(__dirname, "..", "frontend", "dist", "frontend", "index.html"));
   }
 }

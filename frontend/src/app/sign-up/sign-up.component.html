@@ -1,7 +1,9 @@
 <div>
+  <a routerLink="/login" routerLinkActive="active">log in</a>
+
   <div [ngSwitch]="step">
     <div *ngSwitchCase="0">
-      <input [(ngModel)]="email" />
+      <input [(ngModel)]="email" type="email" />
       <div *ngIf="errors.email">{{ errors.email.message }}</div>
     </div>
     <div *ngSwitchCase="1">

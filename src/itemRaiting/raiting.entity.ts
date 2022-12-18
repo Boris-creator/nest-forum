@@ -3,6 +3,7 @@ import {
   Column,
   Model,
   ForeignKey,
+  PrimaryKey,
   BelongsTo,
 } from "sequelize-typescript";
 import { User } from "../user/user.entity";
@@ -13,10 +14,12 @@ export class ItemRaiting extends Model {
   value: number;
 
   @ForeignKey(() => User)
+  @PrimaryKey
   @Column({ allowNull: false })
   userId: number;
 
   @ForeignKey(() => Item)
+  @PrimaryKey
   @Column({ allowNull: false })
   itemId: number;
 

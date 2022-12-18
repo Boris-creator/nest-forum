@@ -7,11 +7,6 @@ export class RaitingService {
     @Inject("ITEM_REPOSITORY") private item: typeof Item,
     @Inject("RAITING_REPOSITORY") private raiting: typeof ItemRaiting,
   ) {}
-  /*
-  async findByEmail(login: string): Promise<item | null> {
-    return await this.user.findOne({ where: { login } });
-  }
-  */
   async estimate(
     userId: number,
     itemId: number,
@@ -24,8 +19,21 @@ export class RaitingService {
         userId,
       });
     } catch (e) {
+      console.error(e);
       return false;
     }
+    await this.updateRaiting(itemId);
     return true;
+  }
+  async updateRaiting(itemId: number) {
+    const stars = await this.raiting.findAll({
+      where: { itemId },
+    });
+    const median =
+      stars.reduce((acc, { value }) => acc + value, 0) / stars.length;
+    return await this.item.update(
+      { raiting: median },
+      { where: { id: itemId } },
+    );
   }
 }

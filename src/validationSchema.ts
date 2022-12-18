@@ -38,4 +38,12 @@ export const schema = {
     login,
     password,
   }),
+  loginData: d.object({
+    email,
+    password,
+  }),
+  itemsPage: d.object({
+    offset: d.number().min(0),
+    limit: d.number().min(1),
+  }),
 };

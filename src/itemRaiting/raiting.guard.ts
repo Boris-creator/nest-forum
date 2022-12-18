@@ -15,7 +15,8 @@ type req = { userId: number; itemId: number; value: number };
 export class RaitingGuard implements CanActivate {
   constructor(@Inject("ITEM_REPOSITORY") private item: typeof Item) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const body: req = context.switchToHttp().getRequest().body;
+    const request = context.switchToHttp().getRequest()
+    const body: req = {...request.body, userId: request.user?.id};
     let errorCode: number = 0;
     const valueSchema = z.object({
       value: z.number().min(MIN).max(MAX),
@@ -46,6 +47,7 @@ export class RaitingGuard implements CanActivate {
         HttpStatus.BAD_REQUEST,
       );
     }
+    request.body.userId = body.userId
     return true;
   }
 }

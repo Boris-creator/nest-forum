@@ -15,7 +15,7 @@ export class JwtGuard implements CanActivate {
     try {
       const token = this.getToken(request);
       const user = this.jwtService.verify(token);
-      request.user = user;
+      context.switchToHttp().getRequest().user = user;
       return true;
     } catch (e) {
       // return false or throw a specific error if desired

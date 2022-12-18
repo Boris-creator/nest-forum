@@ -1,5 +1,5 @@
 import { Component, Injectable } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-item",
@@ -8,20 +8,39 @@ import { ActivatedRoute } from "@angular/router";
 })
 @Injectable()
 export class ItemComponent {
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private router: Router) {}
   title!: string;
   id!: number;
-  ngOnInit() {
-    this.id = this.route.snapshot.params["id"]
-    this.title = ["A", "B"][this.id];
-  }
-  async estimate() {
-    const response = await fetch("/estimate", {
+  stars!: number;
+  async ngOnInit() {
+    this.id = +this.route.snapshot.params["id"];
+    const response = await fetch("/item", {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
       },
-      body: JSON.stringify({ userId: 1, itemId: this.id, value: 3 }),
+      body: JSON.stringify({ id: this.id }),
+    });
+    try {
+      const item = await response.json();
+      this.title = item.title;
+    } catch (err) {}
+  }
+  async estimate(value: number) {
+    this.stars = value;
+    const response = await fetch("/estimate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+        Authorization: "access_token " + localStorage["access_token"],
+      },
+      body: JSON.stringify({ itemId: this.id, value: this.stars }),
+    });
+  }
+  goBack() {
+    this.route.queryParams.subscribe((params) => {
+      const page = +params["from"] || 0;
+      this.router.navigate(page == 0 ? ["/items"] : ["/items", page]);
     });
   }
 }

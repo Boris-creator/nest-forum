@@ -1,5 +1,5 @@
 <div>
     <div>{{title}}</div>
-    <a routerLink="/items" routerLinkActive="active" ariaCurrentWhenActive="page">All items</a>
-    <button (click)="estimate()">Estimate me</button>
+    <button (click)="goBack()">All items</button>
+    <button *ngFor="let star of [1, 2, 3, 4, 5]; let index" (click)="estimate(index)">{{index}}</button>
 </div>
