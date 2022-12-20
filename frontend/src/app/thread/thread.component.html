@@ -1,0 +1,10 @@
+<div>
+    <app-comments [itemId]="itemId" (add)="addComment($event)"></app-comments>
+    <div>
+        <div *ngFor="let comment of comments">
+            <h3>{{comment.author.login}}</h3>
+            <div>{{comment.content}}</div>
+            <div>{{comment.createdAt.toString()}}</div>
+        </div>
+    </div>
+</div>

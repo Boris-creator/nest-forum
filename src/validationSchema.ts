@@ -46,4 +46,7 @@ export const schema = {
     offset: d.number().min(0),
     limit: d.number().min(1),
   }),
+  comment: d.object({
+    content: d.string().min(3)
+  })
 };

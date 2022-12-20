@@ -4,6 +4,7 @@ import { User } from "./user/user.entity";
 import { Unverified } from "./user/unverifiedUser.entity";
 import { Item } from "./items/item.entity";
 import { ItemRaiting } from "./itemRaiting/raiting.entity";
+import { Comment } from "./comments/comments.entity";
 import * as dotenv from "dotenv";
 dotenv.config();
 const { DB_USERNAME, DB_PASSWORD, DB_NAME } = process.env;
@@ -15,7 +16,7 @@ export const databaseProviders = [
         dialect: "mysql",
         host: "localhost",
       });
-      sequelize.addModels([User, Unverified, Item, ItemRaiting]);
+      sequelize.addModels([User, Unverified, Item, ItemRaiting, Comment]);
       await sequelize.sync();
       return sequelize;
     },

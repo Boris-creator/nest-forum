@@ -1,5 +1,11 @@
 <div>
-    <div>{{title}}</div>
-    <button (click)="goBack()">All items</button>
-    <button *ngFor="let star of [1, 2, 3, 4, 5]; let index" (click)="estimate(index)">{{index}}</button>
+  <div>{{ title }}</div>
+  <button (click)="goBack()">All items</button>
+  <button
+    *ngFor="let star of [1, 2, 3, 4, 5]; let index"
+    (click)="estimate(index)"
+  >
+    {{ index }}
+  </button>
+  <app-thread [itemId]="id"></app-thread>
 </div>

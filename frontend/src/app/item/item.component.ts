@@ -21,6 +21,16 @@ export class ItemComponent {
       },
       body: JSON.stringify({ id: this.id }),
     });
+    /*
+    const comment = await fetch("/comment/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+        Authorization: "access_token " + localStorage["access_token"],
+      },
+      body: JSON.stringify({ itemId: this.id, content: "Aaaaaaa!", commentId: null }),
+    });
+    */
     try {
       const item = await response.json();
       this.title = item.title;
