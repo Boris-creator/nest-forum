@@ -1,10 +1,23 @@
 <div>
-    <app-comments [itemId]="itemId" (add)="addComment($event)"></app-comments>
-    <div>
-        <div *ngFor="let comment of comments">
-            <h3>{{comment.author.login}}</h3>
-            <div>{{comment.content}}</div>
-            <div>{{comment.createdAt.toString()}}</div>
-        </div>
+  <div *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div *ngIf="commentToAnswer">
+    <button (click)="answerTo(null)">cancel</button>
+  </div>
+  <app-comments (add)="addComment($event)"></app-comments>
+  <div>
+    <div *ngFor="let comment of comments" [id]="comment.id">
+      <div *ngIf="comment.commentId">
+        <a (click)="navigateTo(comment.commentId)">in answer to</a>
+      </div>
+      <div>
+        <h3>{{ comment.author.login }}</h3>
+        <div>{{ comment.content }}</div>
+        <div>{{ comment.createdAt.toLocaleString() }}</div>
+      </div>
+      <div>
+        <button (click)="answerTo(comment.id)">answer</button>
+        <button *ngIf="delete_comments" (click)="deleteComment(comment.id)">delete</button>
+      </div>
     </div>
+  </div>
 </div>

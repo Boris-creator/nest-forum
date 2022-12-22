@@ -4,6 +4,8 @@ import { JwtModule } from "@nestjs/jwt";
 import { MailModule } from "../mail.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
+import { RolesModule } from "../roles/roles.module";
+import { RolesService } from "../roles/roles.service";
 
 @Module({
   imports: [
@@ -13,9 +15,10 @@ import { AuthService } from "./auth.service";
       signOptions: { expiresIn: 60 * 1000 + "s" },
     }),
     MailModule,
+    RolesModule,
   ],
   exports: [JwtModule],
   controllers: [AuthController],
-  providers: [AuthService, MailModule],
+  providers: [AuthService, MailModule, RolesService],
 })
 export class AuthModule {}

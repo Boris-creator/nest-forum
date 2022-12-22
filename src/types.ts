@@ -15,5 +15,18 @@ export type comment = {
   };
   content: string;
   commentId: number | null; //answerTo
-  createdAt: Date
+  createdAt: Date;
 };
+//comment from client
+export type newComment = {
+  content: string;
+  itemId: number;
+  commentId: number | null;
+};
+//user info in token
+export type userData = {
+  id: number;
+  username: string;
+  roles: string[];
+  permissions: string[]
+}

@@ -47,6 +47,8 @@ export const schema = {
     limit: d.number().min(1),
   }),
   comment: d.object({
-    content: d.string().min(3)
+    content: d.string().min(3),
+    itemId: d.number().min(1),
+    commentId: d.any()
   })
 };

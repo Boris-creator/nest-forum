@@ -1,7 +1,10 @@
 import { Component, Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { schema } from "../../../../src/validationSchema";
+import { email } from "../../../../src/validationDecorators";
+
 import { z as d } from "zod";
+
 @Component({
   selector: "login-form",
   templateUrl: "./login-form.component.html",
@@ -16,6 +19,20 @@ export class LoginFormComponent {
     email: new Error(),
     password: new Error(),
   };
+  /*
+  @email({
+    success: (ob: any, value: string) => {
+      ob.email_ = value;
+      ob.errors.email = null;
+    },
+    error: (ob: any, check: d.SafeParseError<any>) => {
+      ob.errors.email = new Error(ob.displayErrors(check));
+    },
+    getValue: (ob: any) => ob.email_,
+  })
+  email!: string;
+  */
+
   get email() {
     return this.email_;
   }
@@ -28,6 +45,7 @@ export class LoginFormComponent {
       this.email_ = check.data;
     }
   }
+  
   get password() {
     return this.password_;
   }
@@ -51,7 +69,7 @@ export class LoginFormComponent {
       localStorage.setItem("access_token", access_token);
       this.router.navigate(["/items"]);
     } else {
-      console.log("Wrong...")
+      console.log("Wrong...");
     }
     const r = await fetch("/hello", {
       method: "GET",

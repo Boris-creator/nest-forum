@@ -2,6 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { UserService, user } from "../user/user.service";
 import { JwtService } from "@nestjs/jwt";
 import { MailModule } from "../mail.module";
+import { RolesService } from "../roles/roles.service";
+import {userData} from "../types"
+
+import * as dotenv from "dotenv";
+dotenv.config();
 
 import * as crypto from "crypto";
 import * as argon from "argon2";
@@ -10,6 +15,7 @@ type LoginData = { email: string; password: string; login: string };
 export class AuthService {
   constructor(
     private userService: UserService,
+    private rolesService: RolesService,
     private jwtService: JwtService,
     private mailer: MailModule,
   ) {}
@@ -25,6 +31,14 @@ export class AuthService {
   async signUp({ email, password, login }: LoginData): Promise<boolean> {
     const passwordHashed = await argon.hash(password);
     await this.userService.destroyBid({ email });
+    if (process.env.DEV) {
+      await this.userService.createUser({
+        login,
+        email,
+        password: passwordHashed,
+      });
+      return true;
+    }
     const hash = crypto.randomBytes(16).toString("base64"),
       expire = Date.now() + 6 * 60 * 60 * 1000;
 
@@ -43,12 +57,18 @@ export class AuthService {
     return true;
   }
   authorize(user: user) {
-    const payload = { username: user.login, id: user.id };
+    const payload: userData = {
+      username: user.login,
+      id: user.id,
+      roles: user.roles.map(({ title }) => title),
+      permissions: this.rolesService.getPermissions(user.roles),
+    };
+    console.log(payload);
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
-  async recoverPassword(hash, password) {
+  async recoverPassword(hash: string, password: string) {
     /*
       const usr = await Recover_password.findOne({ where: { hash } });
       if (!usr) {

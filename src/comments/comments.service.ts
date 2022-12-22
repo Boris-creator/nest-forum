@@ -1,12 +1,9 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { Comment } from "./comments.entity";
 import { User } from "../user/user.entity";
-
-export type newComment = {
-  itemId: number; //subject
+import { newComment as comment } from "../types";
+export type newComment = comment & {
   userId: number; //author
-  content: string;
-  commentId?: number; //answerTo
 };
 @Injectable()
 export class CommentsService {
@@ -29,6 +26,12 @@ export class CommentsService {
         model: User,
         attributes: ["login"],
       },
+    });
+  }
+  async deleteOne(filter: { id: number }) {
+    const { id } = filter;
+    return await this.comment.destroy({
+      where: { id },
     });
   }
 }

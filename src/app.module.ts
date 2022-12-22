@@ -10,6 +10,7 @@ import { RaitingModule } from "./itemRaiting/raiting.module"
 import {DatabaseModule} from "./db.module"
 import { join } from "path";
 import { CommentsModule } from './comments/comments.module';
+import { RolesModule } from './roles/roles.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -21,7 +22,8 @@ import { CommentsModule } from './comments/comments.module';
     DatabaseModule,
     UserModule,
     RaitingModule,
-    CommentsModule
+    CommentsModule,
+    RolesModule
   ],
   controllers: [AppController],
   providers: [AppService],

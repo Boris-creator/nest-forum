@@ -11,14 +11,13 @@ export class JwtGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = this.getRequest<
       request & { user?: Record<string, unknown> }
-    >(context); // can use FastifyRequest or Request here too
+    >(context); 
     try {
       const token = this.getToken(request);
       const user = this.jwtService.verify(token);
       context.switchToHttp().getRequest().user = user;
       return true;
     } catch (e) {
-      // return false or throw a specific error if desired
       return false;
     }
   }

@@ -1,9 +1,8 @@
 import { Component, Injectable, Input, Output, EventEmitter } from "@angular/core";
 
 
-type comment = {
+export type comment = {
   content: string;
-  itemId: number
 };
 @Injectable()
 @Component({
@@ -12,8 +11,7 @@ type comment = {
   styleUrls: ["./comments.component.scss"],
 })
 export class CommentsComponent {
-  @Input()
-  itemId!: number;
+  //@Input()itemId!: number;
   @Input()
   answerTo?: number;
   @Output("add")
@@ -24,7 +22,6 @@ export class CommentsComponent {
   add() {
     this.comment.emit({
       content: this.content,
-      itemId: this.itemId,
     })
   }
   

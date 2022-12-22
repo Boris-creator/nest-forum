@@ -1,18 +1,13 @@
 import { Component, Input } from "@angular/core";
 import { Observable } from "rxjs";
-import { catchError, retry } from "rxjs/operators";
 import { HttpHelper } from "../http.service";
-import { comment } from "../../../../src/types";
+import { comment, newComment, userData } from "../../../../src/types";
 import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
 } from "@angular/common/http";
 
-type newComment = {
-  content: string;
-  itemId: number;
-};
 type search = {
   itemId: number;
 };
@@ -27,17 +22,50 @@ export class ThreadComponent {
   @Input()
   itemId!: number;
   comments: comment[] = [];
+  commentToAnswer?: number | null;
+  get delete_comments() {
+    const userData: userData | null = this.httpHelper.decode();
+    if (!userData) {
+      return false;
+    }
+    return userData.permissions.includes("delete_comments");
+  }
+  private urlPrefix = "comment";
   private urls = {
-    add: "comment/add",
-    getAll: "comment/find",
+    add: this.urlPrefix + "/add",
+    getAll: this.urlPrefix + "/find",
+    deleteOne: this.urlPrefix + "/delete",
   };
   private httpOptions = this.httpHelper.options;
-  addComment(comment: newComment) {
+  private errorMessages: { [key: number]: string } = {
+    400: "Your message is too short",
+    403: "Log in if you want to post your comments",
+  };
+  errorMessage: string | null = null;
+
+  answerTo(commentId: number | null) {
+    this.commentToAnswer = commentId;
+    //scroll to form
+  }
+  navigateTo(commentId: number) {
+    //scroll to the comment
+  }
+  addComment(comment: { content: string }) {
+    const newComment: newComment = {
+      content: comment.content,
+      itemId: this.itemId,
+      commentId: this.commentToAnswer || null,
+    };
     const req: Observable<comment> = this.http
-      .post<comment>(this.urls.add, comment, this.httpOptions)
+      .post<comment>(this.urls.add, newComment, this.httpOptions)
       .pipe();
-    req.subscribe((res) => {
-      this.comments.push(res);
+    req.subscribe({
+      next: (res) => {
+        this.comments.push(res);
+      },
+      error: (err) => {
+        this.errorMessage = this.errorMessages[err.status] || null;
+      },
     });
   }
   getComments() {
@@ -48,25 +76,29 @@ export class ThreadComponent {
         this.httpOptions,
       )
       .pipe();
-    req.subscribe((data) => {
-      this.comments.splice(0, this.comments.length, ...data);
+    req.subscribe({
+      next: (data) => {
+        this.comments.splice(0, this.comments.length, ...data);
+      },
+    });
+  }
+  deleteComment(commentId: number) {
+    const req = this.http.post<{ success: boolean }>(
+      this.urls.deleteOne,
+      { id: commentId },
+      this.httpOptions,
+    );
+    req.subscribe({
+      next: () => {
+        const i = this.comments.findIndex(({ id }) => id == commentId);
+        if (i == -1) {
+          return;
+        }
+        this.comments.splice(i, 1);
+      },
     });
   }
   ngOnInit() {
     this.getComments();
-  }
-  private handleError(error: HttpErrorResponse) {
-    if (error.status === 0) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error("An error occurred:", error.error);
-    } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong.
-      console.error(
-        `Backend returned code ${error.status}, body was: `,
-        error.error,
-      );
-    }
-    // Return an observable with a user-facing error message.
   }
 }

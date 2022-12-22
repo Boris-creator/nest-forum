@@ -9,7 +9,7 @@ dotenv.config();
   exports: [],
 })
 export class MailModule {
-  async send({ to, subject, htmlContent }) {
+  async send({ to, subject, htmlContent }: {to:string, subject:string, htmlContent: string}) {
     const sendinblue_key = process.env.SENDINBLUE_KEY;
     SibApiV3Sdk.ApiClient.instance.authentications["api-key"].apiKey =
       sendinblue_key;
