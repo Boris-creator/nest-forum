@@ -9,7 +9,9 @@ import {
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { ValidationPipe as signupPipe } from "./signup.pipe";
-import { ValidationPipe as loginPipe } from "./login.pipe";
+//import { ValidationPipe as loginPipe } from "./login.pipe";
+import { schema } from "../validationSchema";
+import { ValidationPipe } from "../pipeFactory";
 
 type LoginData = { email: string; password: string; login: string };
 
@@ -19,7 +21,7 @@ export class AuthController {
 
   @Post("login")
   async signIn(
-    @Body(loginPipe) body: LoginData,
+    @Body(new ValidationPipe(schema.loginData)) body: LoginData,
   ): Promise<{ access_token: string }> {
     const user = await this.appService.findUser(body);
     if (!user) {

@@ -1,13 +1,15 @@
 import { Component, Injectable } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import {
-  queryOptions as options,
-  itemsInfo as info,
-} from "../../../../src/types";
+import { HttpHelper } from "../http.service";
+import { Helper } from "../permissions.service";
+import { HttpClient } from "@angular/common/http";
+import { queryOptions as options, itemsInfo as info } from "@common/types";
+import { first } from "rxjs";
 
 type item = {
   id: number;
   title: string;
+  approved: boolean;
 };
 
 @Component({
@@ -17,67 +19,102 @@ type item = {
 })
 @Injectable()
 export class ItemsComponent {
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private httpHelper: HttpHelper,
+    private rolesHelper: Helper,
+  ) {}
   items: item[] = [
-    { id: 1, title: "First A" },
-    { id: 2, title: "First B" },
-    { id: 3, title: "First C" },
+    { id: 1, title: "First A", approved: true },
+    { id: 2, title: "First B", approved: true },
+    { id: 3, title: "First C", approved: true },
   ];
   count = 0;
-  private itemsPerPage = 4;
-  private page_!: number;
-  private cache = new Map<number, item[]>();
-  private get offset() {
-    return this.page * this.itemsPerPage;
-  }
-  get page() {
-    return this.page_;
-  }
-  set page(page) {
-    this.page_ = page;
-    this.router.navigate(page == 0 ? ["/items"] : ["/items", page + 1]); //I can add an if condition, checking if we are on the page already
-    if (this.cache.has(page)) {
-      this.setItems(this.cache.get(page) || [], this.count);
-      return;
+  filters: options["filter"] = {};
+
+  refresh = {};
+  dataLoaded = false;
+
+  applyFilters(e: Event) {
+    const elem = e.target as HTMLInputElement;
+    const v = elem.value;
+    switch (v) {
+      case "all":
+        delete this.filters["approved"];
+        break;
+      case "approved":
+        this.filters["approved"] = true;
+        break;
+      case "not":
+        this.filters["approved"] = false;
     }
-    this.getItems().then(({ items, count }) => {
-      this.setItems(items, count);
-      this.cache.set(page, items);
-    });
+    this.refresh = {};
+    return v;
   }
-  get lastPage() {
-    return this.count <= this.offset + this.itemsPerPage;
+  get moder() {
+    return this.rolesHelper.decode().canAddItems();
   }
-  get pagesCount() {
-    return Math.ceil(this.count / this.itemsPerPage);
-  }
+  private httpOptions = this.httpHelper.options;
   openItem(itemId: number) {
-    this.router.navigate(["/item", itemId], {
-      queryParams: { from: this.page + 1 },
+    this.route.queryParams.subscribe((params) => {
+      this.router.navigate(["/item", itemId], {
+        queryParams: { from: params["page"] },
+      });
     });
   }
-  async getItems(): Promise<info<item>> {
+  feed(items: item[]) {
+    this.setItems(items, this.count);
+  }
+  async demand({ limit, offset }: { offset: number; limit: number }) {
+    const options: options = {
+      limit,
+      offset,
+      filter: this.filters,
+    };
+    let res = { count: 0, items: this.items };
+    this.dataLoaded = false;
     const response = await fetch("/items", {
+      //to do: use http
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
+        Authorization: "access_token " + localStorage["access_token"],
       },
-      body: JSON.stringify({
-        limit: this.itemsPerPage,
-        offset: this.offset,
-      } as options),
+      body: JSON.stringify(options),
     });
     if (response.ok) {
-      return await response.json();
+      res = await response.json();
     }
-    return { count: 0, items: [] };
+    this.setItems(res.items, res.count);
+    this.dataLoaded = true;
   }
-  setItems(items: item[], count: number) {
+  private setItems(items: item[], count: number) {
     this.items.splice(0, this.items.length, ...items);
     this.count = count;
   }
+  addItem(item: { title: string; body: { text: string } }) {
+    this.http.post<any>("items/create", item, this.httpOptions).subscribe();
+  }
+  approveItem(item: item) {
+    this.http
+      .post<any>(
+        "items/approve",
+        { id: item.id, approve: true },
+        this.httpOptions,
+      )
+      .subscribe(() => {
+        item.approved = true;
+      });
+  }
   async ngOnInit() {
-    const page = +this.route.snapshot.params["page"] - 1 || 0;
-    this.page = Math.max(page, 0);
+    this.route.queryParams.pipe(first()).subscribe((params) => {
+      for (let key in params) {
+        if (key != "page") {
+          this.filters[key] = params[key];
+        }
+      }
+    });
   }
 }

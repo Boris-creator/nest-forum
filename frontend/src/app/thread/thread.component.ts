@@ -1,12 +1,10 @@
 import { Component, Input } from "@angular/core";
 import { Observable } from "rxjs";
 import { HttpHelper } from "../http.service";
-import { comment, newComment, userData } from "../../../../src/types";
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from "@angular/common/http";
+import { Helper } from "../permissions.service";
+
+import { comment, newComment, userData } from "@common/types";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 
 type search = {
   itemId: number;
@@ -17,18 +15,19 @@ type search = {
   styleUrls: ["./thread.component.scss"],
 })
 export class ThreadComponent {
-  constructor(private http: HttpClient, private httpHelper: HttpHelper) {}
+  constructor(
+    private http: HttpClient,
+    private httpHelper: HttpHelper,
+    private rolesHelper: Helper,
+  ) {}
 
   @Input()
   itemId!: number;
+
   comments: comment[] = [];
   commentToAnswer?: number | null;
   get delete_comments() {
-    const userData: userData | null = this.httpHelper.decode();
-    if (!userData) {
-      return false;
-    }
-    return userData.permissions.includes("delete_comments");
+    return this.rolesHelper.decode().canDeleteComments();
   }
   private urlPrefix = "comment";
   private urls = {

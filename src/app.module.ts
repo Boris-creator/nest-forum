@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { ServeStaticModule } from "@nestjs/serve-static";
@@ -11,19 +12,22 @@ import {DatabaseModule} from "./db.module"
 import { join } from "path";
 import { CommentsModule } from './comments/comments.module';
 import { RolesModule } from './roles/roles.module';
+import { NotificationsModule } from './notifications/notifications.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "frontend", "dist", "frontend"),
     }),
     //ConfigModule.forRoot({ isGlobal: true, envFilePath: "../.env" }), //I'll better use native dotenv.
+    EventEmitterModule.forRoot(),
     ItemsModule,
     AuthModule,
     DatabaseModule,
     UserModule,
     RaitingModule,
     CommentsModule,
-    RolesModule
+    RolesModule,
+    NotificationsModule
   ],
   controllers: [AppController],
   providers: [AppService],

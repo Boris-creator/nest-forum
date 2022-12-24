@@ -1,7 +1,6 @@
 import { Component, Injectable } from "@angular/core";
 import { Router } from "@angular/router";
-import { schema } from "../../../../src/validationSchema";
-import { email } from "../../../../src/validationDecorators";
+import { schema } from "@common/validationSchema";
 
 import { z as d } from "zod";
 

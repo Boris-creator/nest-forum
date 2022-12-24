@@ -1,16 +1,27 @@
 <div>
-  <div *ngFor="let item of items" (click)="openItem(item.id)">
-    {{ item.title }}
+  <div *ngIf="moder">
+    <select (change)="applyFilters($event)">
+      <option value="all">all</option>
+      <option value="approved">approved</option>
+      <option value="not">not</option>
+    </select>
   </div>
-  <div>
-    <button (click)="page = page - 1" [disabled]="page == 0">previous</button>
-    <button
-      *ngFor="let e of [].constructor(pagesCount); let i = index"
-      [disabled]="i == page"
-      (click)="page = i"
-    >
-      {{ i + 1 }}
-    </button>
-    <button (click)="page = page + 1" [disabled]="lastPage">next</button>
+  <div *ngFor="let item of items">
+    <h2 (click)="openItem(item.id)">{{ item.title }}</h2>
+    <div>
+      <button *ngIf="moder && !item.approved" (click)="approveItem(item)">
+        approve
+      </button>
+    </div>
   </div>
+  <app-pagination
+    [items]="items"
+    [filters]="filters"
+    [count]="count"
+    [dataLoaded]="dataLoaded"
+    [refresh]="refresh"
+    (demand)="demand($event)"
+    (feed)="feed($event)"
+  ></app-pagination>
+  <app-item-redactor (creator)="addItem($event)"></app-item-redactor>
 </div>

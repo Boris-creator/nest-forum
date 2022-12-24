@@ -28,6 +28,8 @@ const password = d
     }),
   email = d.preprocess(trim, d.string().email("This is not an email")),
   login = d.preprocess(trim, d.string().min(3, "your login cannot").max(30));
+const itemTitle = d.preprocess(trim, d.string().min(3, "at least 3!!!")),
+  itemText = d.preprocess(trim, d.string().min(3).max(3000));
 export const schema = {
   password,
   password_2,
@@ -49,6 +51,14 @@ export const schema = {
   comment: d.object({
     content: d.string().min(3),
     itemId: d.number().min(1),
-    commentId: d.any()
-  })
+    commentId: d.any(),
+  }),
+  itemTitle,
+  itemText,
+  item: d.object({
+    title: itemTitle,
+    body: d.object({
+      text: itemText,
+    }),
+  }),
 };

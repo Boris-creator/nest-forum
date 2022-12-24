@@ -14,7 +14,7 @@ export class ItemComponent {
   stars!: number;
   async ngOnInit() {
     this.id = +this.route.snapshot.params["id"];
-    const response = await fetch("/item", {
+    const response = await fetch("/items/item", {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
@@ -50,7 +50,10 @@ export class ItemComponent {
   goBack() {
     this.route.queryParams.subscribe((params) => {
       const page = +params["from"] || 0;
-      this.router.navigate(page == 0 ? ["/items"] : ["/items", page]);
+      this.router.navigate(
+        ["/items"],
+        page == 0 ? {} : { queryParams: { page } },
+      );
     });
   }
 }

@@ -4,27 +4,24 @@ import {
   Model,
   ForeignKey,
   BelongsTo,
-  DataType,
 } from "sequelize-typescript";
 import { User } from "../user/user.entity";
+import { Notify } from "./notifications.enum";
 @Table
-export class Item extends Model {
+export class Notification extends Model {
   @Column({ allowNull: false })
-  title: string;
+  text: string;
 
-  @Column({ allowNull: false, type: DataType.JSON })
-  body: object;
+  @Column({ allowNull: false })
+  type: Notify;
 
   @ForeignKey(() => User)
   @Column({ allowNull: true })
   userId: number;
 
   @Column({ allowNull: true })
-  raiting: number;
-
-  @Column({ allowNull: false })
-  approved: boolean;
+  read: boolean;
 
   @BelongsTo(() => User)
-  author: User;
+  recipient: User;
 }

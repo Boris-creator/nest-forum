@@ -7,7 +7,7 @@ import {
 } from "sequelize-typescript";
 import { Item } from "../items/item.entity";
 import { User } from "../user/user.entity";
-
+//TO DO: make it paranoid
 @Table
 export class Comment extends Model {
   @Column({ allowNull: false })

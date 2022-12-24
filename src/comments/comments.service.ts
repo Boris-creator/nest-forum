@@ -1,13 +1,18 @@
 import { Injectable, Inject } from "@nestjs/common";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Comment } from "./comments.entity";
 import { User } from "../user/user.entity";
+import { Notify } from "../notifications/notifications.enum";
 import { newComment as comment } from "../types";
 export type newComment = comment & {
   userId: number; //author
 };
 @Injectable()
 export class CommentsService {
-  constructor(@Inject("COMMENT_REPOSITORY") private comment: typeof Comment) {}
+  constructor(
+    @Inject("COMMENT_REPOSITORY") private comment: typeof Comment,
+    private emitter: EventEmitter2,
+  ) {}
   async add(data: newComment) {
     try {
       return await this.comment.create(data);
@@ -28,10 +33,17 @@ export class CommentsService {
       },
     });
   }
-  async deleteOne(filter: { id: number }) {
+  async deleteOne(
+    filter: { id: number },
+    by: { id: number; username: string },
+  ) {
     const { id } = filter;
-    return await this.comment.destroy({
+    //it should be paranoid
+    const comment = await this.comment.findByPk(id);
+    const num = await this.comment.destroy({
       where: { id },
     });
+    this.emitter.emit(Notify.deleteComment, { comment, by: by });
+    return num;
   }
 }

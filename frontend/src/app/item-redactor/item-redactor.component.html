@@ -1,0 +1,17 @@
+<div>
+  <div [formGroup]="form">
+    <input formControlName="title" />
+    <textarea formControlName="text"></textarea>
+    <div
+      *ngIf="form.controls['title'].errors && form.controls['title'].touched"
+    >
+      {{ form.controls["title"].errors["errors"] }}
+    </div>
+    <button
+      (click)="submit()"
+      [disabled]="form.controls['title'].errors || form.controls['text'].errors"
+    >
+      ok
+    </button>
+  </div>
+</div>

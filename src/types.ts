@@ -1,6 +1,9 @@
 export type queryOptions = {
   limit: number;
   offset: number;
+  filter: {
+    [key: string] : any
+  }
 };
 export type itemsInfo<item> = {
   count: number;
