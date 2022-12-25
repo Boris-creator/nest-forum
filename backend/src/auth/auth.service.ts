@@ -3,7 +3,7 @@ import { UserService, user } from "../user/user.service";
 import { JwtService } from "@nestjs/jwt";
 import { MailModule } from "../mail.module";
 import { RolesService } from "../roles/roles.service";
-import {userData} from "../types"
+import { userData } from "../types";
 
 import * as dotenv from "dotenv";
 dotenv.config();

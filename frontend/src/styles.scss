@@ -1,1 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  min-height: 100vh;
+  background: whitesmoke;
+}
+button {
+  cursor: pointer;
+  padding: .4em .8em;
+  background: white;
+  border: thin solid silver;
+  border-radius: .2em;
+}

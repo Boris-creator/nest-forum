@@ -1,10 +1,12 @@
-<div>
-  <a routerLink="/signup" routerLinkActive="active">sign up</a>
-  <input [(ngModel)]="email" type="email" />
-  <div *ngIf="errors.email">{{ errors.email.message }}</div>
-  <input [(ngModel)]="password" type="password" />
-  <div *ngIf="errors.password">{{ errors.password.message }}</div>
-  <button [disabled]="errors.email || errors.password" (click)="submitForm()">
-    click me
-  </button>
+<div class="wrapper">
+  <div class="form">
+    <a routerLink="/signup" routerLinkActive="active">sign up</a>
+    <input [(ngModel)]="email" type="email" />
+    <div *ngIf="errors.email">{{ errors.email.message }}</div>
+    <input [(ngModel)]="password" type="password" />
+    <div *ngIf="errors.password">{{ errors.password.message }}</div>
+    <button [disabled]="errors.email || errors.password" (click)="submitForm()">
+      click me
+    </button>
+  </div>
 </div>

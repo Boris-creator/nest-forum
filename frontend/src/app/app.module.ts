@@ -16,6 +16,7 @@ import { ThreadComponent } from "./thread/thread.component";
 import { ItemRedactorComponent } from "./item-redactor/item-redactor.component";
 import { AdminPanelComponent } from "./admin-panel/admin-panel.component";
 import { PaginationComponent } from './pagination/pagination.component';
+import { ProfileComponent } from './profile/profile.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,6 +29,7 @@ import { PaginationComponent } from './pagination/pagination.component';
     ItemRedactorComponent,
     AdminPanelComponent,
     PaginationComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
