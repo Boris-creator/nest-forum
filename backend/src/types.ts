@@ -15,6 +15,7 @@ export type comment = {
   userId: number; //author
   author: {
     login: string;
+    id?: number
   };
   content: string;
   commentId: number | null; //answerTo
@@ -26,6 +27,10 @@ export type newComment = {
   itemId: number;
   commentId: number | null;
 };
+export type editComment = {
+  content: string;
+  id: number;
+}
 //user info in token
 export type userData = {
   id: number;

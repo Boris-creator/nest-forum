@@ -1,6 +1,5 @@
 import { Component, Injectable, Input, Output, EventEmitter } from "@angular/core";
 
-
 export type comment = {
   content: string;
 };
@@ -14,15 +13,17 @@ export class CommentsComponent {
   //@Input()itemId!: number;
   @Input()
   answerTo?: number;
+  @Input()
+  content = "";
   @Output("add")
   comment = new EventEmitter<comment>();
-  content = "";
 
   //add(comment: comment): Observable<comment> {
   add() {
     this.comment.emit({
       content: this.content,
     })
+    this.content = ""
   }
   
 }

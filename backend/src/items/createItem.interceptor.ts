@@ -30,7 +30,6 @@ export const ReqAsBody = createParamDecorator(
     const request = context.switchToHttp().getRequest(),
       { user } = request;
     request.body.userId = user.id;
-    console.log(user);
     request.body.approved = user.permissions.includes(permissions.add_items);
     return request;
   },

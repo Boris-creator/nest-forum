@@ -12,7 +12,7 @@ export class NotificationsService {
   ) {}
   //@OnEvent(Notify.deleteComment) //without using RxJs:
   async notify1(info: { userId: number; text: string; type: Notify }) {
-    return await this.bd.create(info);
+    return await this.bd.create(info); // I shouldn't store a formatted string!
   }
   onModuleInit() {
     //without using RxJs:
@@ -23,7 +23,7 @@ export class NotificationsService {
       );
     });
     */
-    //using RxJs
+    //using RxJs:
     const t = this;
     const light = fromEvent(this.emitter, Notify.deleteComment);
     light

@@ -2,7 +2,7 @@ import {
   Controller,
   Post,
   Body,
-  Req,
+  Param,
   UseInterceptors,
   UseGuards,
   UsePipes,
@@ -16,7 +16,9 @@ import {
   ReqAsBody,
 } from "./createItem.interceptor";
 import { JwtGuard } from "../auth/auth.guard";
-import { Guard as FilterGuard, Filtered } from "./items.guard";
+import { Guard as FilterGuard, Filtered, EditGuard, GuardOne } from "./items.guard";
+import { User } from "../auth/auth.decorator";
+import { AuthInterceptor } from "../auth/auth.interceptor"
 import { queryOptions as options, itemsInfo } from "../types";
 import { RoleGuard } from "src/roles/roles.guard";
 import { permissions } from "src/roles/permissions.constants";
@@ -26,11 +28,10 @@ export class ItemsController {
   constructor(private readonly appService: ItemsService) {}
 
   @Post("")
-  @UseGuards(
-    JwtGuard,
-    //FilterGuard
-  )
-  async getSome(@Filtered() data: options): Promise<itemsInfo<item>> {
+  @UseInterceptors(AuthInterceptor)
+  async getSome(
+    @Filtered() @User(["id", "permissions"]) data: options,
+  ): Promise<itemsInfo<item>> {
     if (!schema.itemsPage.safeParse(data).success) {
       //I should do it in a pipe
       Object.assign(data, {
@@ -40,8 +41,10 @@ export class ItemsController {
     }
     return await this.appService.findSome(data);
   }
-  @Post("item")
-  async getById(@Body() data: { id: number }): Promise<item> {
+  @Post("item/:id")
+  @UseInterceptors(AuthInterceptor)
+  @UseGuards(GuardOne)
+  async getById(@Param() data: { id: number }): Promise<item> {
     return await this.appService.getById(data.id);
   }
   @UseGuards(JwtGuard)
@@ -62,5 +65,10 @@ export class ItemsController {
   @Post("approve")
   async approveItem(@Body() data: { id: number; approve: boolean }) {
     return await this.appService.approve(data.id, data.approve);
+  }
+  @Post("edit")
+  @UseGuards(EditGuard)
+  async edit(data: { id: number; title: string; body: { text: string } }) {
+    return this.appService.edit(data);
   }
 }

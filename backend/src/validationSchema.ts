@@ -30,6 +30,7 @@ const password = d
   login = d.preprocess(trim, d.string().min(3, "your login cannot").max(30));
 const itemTitle = d.preprocess(trim, d.string().min(3, "at least 3!!!")),
   itemText = d.preprocess(trim, d.string().min(3).max(3000));
+const commentContent = d.string().min(3);
 export const schema = {
   password,
   password_2,
@@ -48,8 +49,12 @@ export const schema = {
     offset: d.number().min(0),
     limit: d.number().min(1),
   }),
+  editComment: d.object({
+    content: commentContent,
+    id: d.number().min(1),
+  }),
   comment: d.object({
-    content: d.string().min(3),
+    content: commentContent,
     itemId: d.number().min(1),
     commentId: d.any(),
   }),

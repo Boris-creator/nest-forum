@@ -14,23 +14,14 @@ export class ItemComponent {
   stars!: number;
   async ngOnInit() {
     this.id = +this.route.snapshot.params["id"];
-    const response = await fetch("/items/item", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify({ id: this.id }),
-    });
-    /*
-    const comment = await fetch("/comment/add", {
+    const response = await fetch(`/items/item/${this.id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
         Authorization: "access_token " + localStorage["access_token"],
       },
-      body: JSON.stringify({ itemId: this.id, content: "Aaaaaaa!", commentId: null }),
+      //body: JSON.stringify({ id: this.id }),
     });
-    */
     try {
       const item = await response.json();
       this.title = item.title;

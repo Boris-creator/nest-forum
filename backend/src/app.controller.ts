@@ -3,6 +3,8 @@ import { Response, Request } from "express";
 import { AppService } from "./app.service";
 import { JwtGuard } from "./auth/auth.guard";
 import { join } from "path";
+import { frontend } from "./constants";
+
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -14,6 +16,12 @@ export class AppController {
   }
   @Get("/")
   send(@Req() req: Request, @Res() res: Response) {
-    res.sendFile(join(__dirname, "..", "frontend", "dist", "frontend", "index.html"));
+    res.sendFile(
+      join(__dirname, ...frontend, "dist", "frontend", "index.html"),
+    );
+  }
+  @Get("/assets/*")
+  sendFile(@Req() req: Request, @Res() res: Response) {
+    res.sendFile(join(__dirname, ...frontend, "src", req.url));
   }
 }

@@ -9,15 +9,34 @@
       <div *ngIf="comment.commentId">
         <a (click)="navigateTo(comment.commentId)">in answer to</a>
       </div>
-      <div>
-        <h3>{{ comment.author.login }}</h3>
-        <div>{{ comment.content }}</div>
-        <div>{{ comment.createdAt.toLocaleString() }}</div>
-      </div>
-      <div>
-        <button (click)="answerTo(comment.id)">answer</button>
-        <button *ngIf="delete_comments" (click)="deleteComment(comment.id)">delete</button>
-      </div>
+      <app-comments
+        *ngIf="commentToEdit == comment.id; else showComment"
+        [content]="comment.content"
+        (add)="editComment({ content: $event.content, id: comment.id })"
+      ></app-comments>
+      <ng-template #showComment>
+        <div>
+          <h3>{{ comment.author.login }}</h3>
+          <img [src]="'assets/avatars/' + comment.author.id + '_default.png'" class="avatar">
+          <div>{{ comment.content }}</div>
+          <div>{{ comment.createdAt.toLocaleString() }}</div>
+        </div>
+        <div>
+          <button (click)="answerTo(comment.id)">answer</button>
+          <button
+            *ngIf="comments_permissions[comment.id].edit"
+            (click)="commentToEdit = comment.id"
+          >
+            edit
+          </button>
+          <button
+            *ngIf="comments_permissions[comment.id].del"
+            (click)="deleteComment(comment.id)"
+          >
+            delete
+          </button>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>

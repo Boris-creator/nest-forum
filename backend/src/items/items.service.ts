@@ -12,6 +12,9 @@ export class ItemsService {
   async getAll(): Promise<item[]> {
     return await this.item.findAll();
   }
+  async findOne(itemId: number) {
+    return await this.item.findByPk(itemId)
+  }
   async findSome(options: options) {
     const condition = options.filter;
     const [count, items] = await Promise.all([
@@ -31,6 +34,9 @@ export class ItemsService {
   }
   async create(item: newItem) {
     return await this.item.create(item);
+  }
+  async edit(item: item & {id: number}) {
+
   }
   async approve(id: number, approved: boolean) {
     return await this.item.update({ approved }, { where: { id } });

@@ -4,6 +4,8 @@ import { JwtService } from "@nestjs/jwt";
 import { MailModule } from "../mail.module";
 import { RolesService } from "../roles/roles.service";
 import { userData } from "../types";
+import { Mult } from "../multimedia.service";
+import { join } from "path";
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -18,6 +20,7 @@ export class AuthService {
     private rolesService: RolesService,
     private jwtService: JwtService,
     private mailer: MailModule,
+    private mult: Mult,
   ) {}
   async findUser(data: LoginData): Promise<user | null> {
     const { email, password } = data;
@@ -32,11 +35,16 @@ export class AuthService {
     const passwordHashed = await argon.hash(password);
     await this.userService.destroyBid({ email });
     if (process.env.DEV) {
-      await this.userService.createUser({
+      const user = await this.userService.createUser({
         login,
         email,
         password: passwordHashed,
       });
+      this.mult.createAvatar(
+        user.login,
+        "",
+        join("avatars", `${user.id}_default.png`),
+      );
       return true;
     }
     const hash = crypto.randomBytes(16).toString("base64"),

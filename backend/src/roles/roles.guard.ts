@@ -6,7 +6,7 @@ export class RoleGuard implements CanActivate {
     this.requiredPermissions = requiredPermissions;
   }
   requiredPermissions: string[];
-  canActivate(context: ExecutionContext): boolean {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     const user = context.switchToHttp().getRequest().user;
     if (this.requiredPermissions.every((p) => user.permissions.includes(p))) {
       return true;

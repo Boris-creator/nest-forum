@@ -1,24 +1,25 @@
-import { Component, Input } from "@angular/core";
-import { Observable } from "rxjs";
-import { HttpHelper } from "../http.service";
-import { Helper } from "../permissions.service";
+import { Component, Input } from '@angular/core';
+import { Observable } from 'rxjs';
+import { HttpHelper } from '../http.service';
+import { Helper } from '../permissions.service';
 
-import { comment, newComment, userData } from "@common/types";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { comment, newComment, editComment, userData } from '@common/types';
+import { editCommentMaxTime } from '@common/constants';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 type search = {
   itemId: number;
 };
 @Component({
-  selector: "app-thread",
-  templateUrl: "./thread.component.html",
-  styleUrls: ["./thread.component.scss"],
+  selector: 'app-thread',
+  templateUrl: './thread.component.html',
+  styleUrls: ['./thread.component.scss'],
 })
 export class ThreadComponent {
   constructor(
     private http: HttpClient,
     private httpHelper: HttpHelper,
-    private rolesHelper: Helper,
+    private rolesHelper: Helper
   ) {}
 
   @Input()
@@ -26,19 +27,36 @@ export class ThreadComponent {
 
   comments: comment[] = [];
   commentToAnswer?: number | null;
-  get delete_comments() {
-    return this.rolesHelper.decode().canDeleteComments();
+  commentToEdit: number | null = null;
+  get comments_permissions() {
+    const user = this.rolesHelper.decode();
+    const delete_comments = user.canDeleteComments();
+    return Object.fromEntries(
+      this.comments.map((comment) => {
+        return [
+          comment.id,
+          {
+            edit:
+              delete_comments ||
+              (user.id == comment.userId &&
+                Date.now() - +new Date(comment.createdAt) < editCommentMaxTime),
+            del: delete_comments,
+          },
+        ];
+      })
+    );
   }
-  private urlPrefix = "comment";
+  private urlPrefix = 'comment';
   private urls = {
-    add: this.urlPrefix + "/add",
-    getAll: this.urlPrefix + "/find",
-    deleteOne: this.urlPrefix + "/delete",
+    add: this.urlPrefix + '/add',
+    edit: this.urlPrefix + '/edit',
+    getAll: this.urlPrefix + '/find',
+    deleteOne: this.urlPrefix + '/delete',
   };
   private httpOptions = this.httpHelper.options;
   private errorMessages: { [key: number]: string } = {
-    400: "Your message is too short",
-    403: "Log in if you want to post your comments",
+    400: 'Your message is too short',
+    403: 'Log in if you want to post your comments',
   };
   errorMessage: string | null = null;
 
@@ -67,12 +85,27 @@ export class ThreadComponent {
       },
     });
   }
+  editComment(comment: editComment) {
+    const req: Observable<any> = this.http
+      .post<any>(this.urls.edit, comment, this.httpOptions)
+      .pipe();
+    req.subscribe({
+      next: (res) => {
+        const c = this.comments.find(({ id }) => id == comment.id);
+        c && (c.content = comment.content);
+        this.commentToEdit = null;
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
   getComments() {
     const req: Observable<comment[]> = this.http
       .post<comment[]>(
         this.urls.getAll,
         { itemId: this.itemId } as search,
-        this.httpOptions,
+        this.httpOptions
       )
       .pipe();
     req.subscribe({
@@ -85,7 +118,7 @@ export class ThreadComponent {
     const req = this.http.post<{ success: boolean }>(
       this.urls.deleteOne,
       { id: commentId },
-      this.httpOptions,
+      this.httpOptions
     );
     req.subscribe({
       next: () => {
