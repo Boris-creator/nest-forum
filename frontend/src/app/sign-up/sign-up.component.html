@@ -1,43 +1,93 @@
-<div>
-  <a routerLink="/login" routerLinkActive="active">log in</a>
-
-  <div [ngSwitch]="step">
-    <div *ngSwitchCase="0">
-      <input [(ngModel)]="email" type="email" />
-      <div *ngIf="errors.email">{{ errors.email.message }}</div>
+<div class="wrapper">
+  <div class="form">
+    <div class="header">
+      <a routerLink="/login" routerLinkActive="active">log in</a>
     </div>
-    <div *ngSwitchCase="1">
-      <input [(ngModel)]="password" type="password" />
-      <div *ngIf="errors.password">{{ errors.password.message }}</div>
+    <h1>Sign up</h1>
+    <div class="formBody">
+      <div [ngSwitch]="step">
+        <div *ngSwitchCase="0">
+          <label>
+            <span>Email</span>
+            <input
+              [(ngModel)]="email"
+              (keyup.enter)="nextStep()"
+              type="email"
+              autofocus
+            />
+            <div *ngIf="errors.email">{{ errors.email.message }}</div>
+          </label>
+        </div>
+        <div *ngSwitchCase="1" class="passwords">
+          <label>
+            <span>Pick a password</span>
+            <input [(ngModel)]="password" type="password" />
+            <div *ngIf="errors.password">{{ errors.password.message }}</div>
+          </label>
+          <label>
+            <span>Repeat your password</span>
+            <input [(ngModel)]="password_2" type="password" />
+            <div *ngIf="errors.password_2">{{ errors.password_2.message }}</div>
+          </label>
+        </div>
 
-      <input [(ngModel)]="password_2" type="password" />
-      <div *ngIf="errors.password_2">{{ errors.password_2.message }}</div>
-    </div>
-
-    <div *ngSwitchCase="2">
-      <input [(ngModel)]="login" />
-      <div *ngIf="errors.login">{{ errors.login.message }}</div>
-    </div>
-  </div>
-  <div>
-    <button
-      *ngIf="step > 0;"
-      (click)="previousStep()"
-    >
-      back
-    </button>
-    <button
-      *ngIf="step < 2; else submit"
-      [disabled]="stepCorrect"
-      (click)="nextStep()"
-    >
-      next
-    </button>
-    <ng-template #submit>
-      <button [disabled]="errors.login" (click)="submitForm()">
-        click me
-      </button>
+        <div *ngSwitchCase="2">
+          <label>
+            <span>Create a unique login</span>
+            <input [(ngModel)]="login" />
+            <div *ngIf="errors.login">{{ errors.login.message }}</div>
+          </label>
+        </div>
+      </div>
+      <div class="steps">
+        <button [disabled]="step == 0" (click)="previousStep()">back</button>
+        <button
+          *ngIf="step < 2; else submit"
+          [disabled]="stepWrong"
+          (click)="nextStep()"
+        >
+          next
+        </button>
+        <ng-template #submit>
+          <button [disabled]="errors.login" (click)="submitForm()">
+            Finish
+          </button>
+        </ng-template>
+      </div>
       <div *ngIf="errors.exists">{{ errors.exists.message }}</div>
-    </ng-template>
+      <div class="diagram">
+        <svg
+          viewBox="0 0 160 30"
+          preserveAspectRatio="xMidYMid meet"
+          width="160"
+        >
+          <circle
+            *ngFor="let s of steps; let i = index"
+            [attr.cx]="[15, 80, 145][i]"
+            cy="15"
+            r="10"
+            stroke-width="3"
+            [attr.fill]="
+              s.complete && (step > i || step == 2) ? 'green' : 'none'
+            "
+            [attr.stroke]="s.complete ? 'green' : i == step ? 'black' : 'grey'"
+          />
+          <path
+            d="M25 15 l 45 0"
+            stroke-width="3"
+            [attr.stroke]="
+              steps[1].complete ? 'green' : step == 1 ? 'black' : 'grey'
+            "
+          />
+          <path
+            d="M90 15 l 45 0"
+            stroke-width="3"
+            [attr.stroke]="
+              steps[2].complete ? 'green' : step == 2 ? 'black' : 'grey'
+            "
+          />
+        </svg>
+      </div>
+    </div>
   </div>
 </div>

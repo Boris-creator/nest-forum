@@ -1,0 +1,27 @@
+.form {
+  width: 40vw;
+  @media screen and (max-width: 768px) {
+    width: 100vw;
+  }
+  padding: 1em;
+  border: thin solid silver;
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    button {
+      margin: 0 0 0 1em;
+    }
+  }
+}
+input,
+textarea {
+  display: block;
+  width: 100%;
+  padding: 0.5em;
+}
+
+textarea {
+  resize: none;
+  min-height: 25vh;
+  margin: 2vh 0 0 0;
+}

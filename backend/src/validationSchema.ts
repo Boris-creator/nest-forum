@@ -1,15 +1,16 @@
 import { z as d } from "zod";
 const trim = (v: unknown) => (typeof v == "string" ? v.trim() : v);
+const capitalize = (v: string) => v[0].toUpperCase() + v.slice(1);
 const password = d
     .string()
-    .regex(/^\S+$/, "Password must contain only")
-    .min(6, "p")
-    .max(100),
+    .regex(/^\S*$/, "Password must not contain empty spaces")
+    .min(6, "Password must contain at least 6 characters")
+    .max(100, "Your password is too long"),
   password_2 = d
     .object({
       password_1: d.string(),
       //password_2: d.optional(d.string()), //if we want to
-      password_2: d.string(),
+      password_2: d.string({ required_error: "Repeat the password" }),
     })
     .superRefine(({ password_1, password_2 }, ctx) => {
       if (typeof password_2 == "undefined") {
@@ -27,9 +28,20 @@ const password = d
       return true;
     }),
   email = d.preprocess(trim, d.string().email("This is not an email")),
-  login = d.preprocess(trim, d.string().min(3, "your login cannot").max(30));
-const itemTitle = d.preprocess(trim, d.string().min(3, "at least 3!!!")),
-  itemText = d.preprocess(trim, d.string().min(3).max(3000));
+  login = d.preprocess(
+    trim,
+    d.string().min(3, "Your login cannot be less than 3 characters").max(30),
+  );
+const itemTitle = d
+    .preprocess(
+      trim,
+      d.string().min(3, "Title must contain at least 3 characters."),
+    )
+    .transform(capitalize),
+  itemText = d.preprocess(
+    trim,
+    d.string().min(3, "Text must contain at least 3 characters.").max(3000),
+  );
 const commentContent = d.string().min(3);
 export const schema = {
   password,

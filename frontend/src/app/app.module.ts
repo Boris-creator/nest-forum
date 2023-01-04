@@ -17,6 +17,8 @@ import { ItemRedactorComponent } from "./item-redactor/item-redactor.component";
 import { AdminPanelComponent } from "./admin-panel/admin-panel.component";
 import { PaginationComponent } from './pagination/pagination.component';
 import { ProfileComponent } from './profile/profile.component';
+import { MainPageComponent } from './main-page/main-page.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,6 +32,8 @@ import { ProfileComponent } from './profile/profile.component';
     AdminPanelComponent,
     PaginationComponent,
     ProfileComponent,
+    MainPageComponent,
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,

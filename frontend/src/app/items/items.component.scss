@@ -1,0 +1,32 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 70vw;
+  margin: 0 auto;
+  @media (max-width: 768px) {
+    width: 100vw;
+  }
+  min-height: 90vh;
+}
+.item {
+  border: thin solid silver;
+  padding: 1em;
+  margin: 1em 0;
+  h2 {
+    cursor: pointer;
+  }
+}
+.plusItem {
+  position: fixed;
+  bottom: 1vw;
+  right: 1vw;
+  button {
+    border-radius: 50%;
+    width: 1.2em;
+    height: 1.2em;
+    font-size: 3em;
+    padding: 0;
+    border: thin solid silver;
+  }
+}

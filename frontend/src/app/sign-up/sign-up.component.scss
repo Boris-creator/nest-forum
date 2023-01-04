@@ -1,0 +1,20 @@
+@import "../../variables";
+@import "../login-form/login-form.component.scss";
+.steps {
+  display: flex;
+  justify-content: center;
+  button {
+    width: fit-content;
+    margin: 0 1em;
+  }
+}
+.passwords label {
+  margin: 1em 0;
+}
+.diagram {
+  width: 30%;
+  margin: 1em auto 0 auto;
+  svg {
+    width: 100%;
+  }
+}

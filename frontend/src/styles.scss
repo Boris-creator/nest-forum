@@ -7,11 +7,18 @@
 body {
   min-height: 100vh;
   background: whitesmoke;
+  font-family: sans-serif;
 }
 button {
   cursor: pointer;
-  padding: .4em .8em;
+  padding: 0.4em 0.8em;
   background: white;
   border: thin solid silver;
-  border-radius: .2em;
+  border-radius: 0.2em;
+}
+.error-msg {
+  color: red;
+  min-height: 1.2em;
+  line-height: 1em;
+  margin-top: 0.2em;
 }

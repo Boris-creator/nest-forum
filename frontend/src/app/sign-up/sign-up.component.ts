@@ -1,11 +1,11 @@
-import { Component, Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { schema } from "@common/validationSchema";
-import { z as d } from "zod";
+import { Component, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { schema } from '@common/validationSchema';
+import { z as d } from 'zod';
 @Component({
-  selector: "login-form",
-  templateUrl: "./sign-up.component.html",
-  styleUrls: ["./sign-up.component.scss"],
+  selector: 'login-form',
+  templateUrl: './sign-up.component.html',
+  styleUrls: ['./sign-up.component.scss'],
 })
 @Injectable()
 export class SignUpComponent {
@@ -15,9 +15,16 @@ export class SignUpComponent {
   private password_2_!: string;
   private login_!: string;
   step: 0 | 1 | 2 = 0;
-  get stepCorrect() {
+  get stepWrong() {
     const { email, password, password_2, login } = this.errors;
     return !![email, password || password_2, login][this.step];
+  }
+  get steps() {
+    return [
+      {complete: !this.errors.email},
+      {complete: !this.errors.password && !this.errors.password_2},
+      {complete: !this.errors.login}
+    ]
   }
   error_messages = {};
   errors: {
@@ -25,13 +32,13 @@ export class SignUpComponent {
     password: Error | null;
     password_2: Error | null;
     login: Error | null;
-    exists: Error | null
+    exists: Error | null;
   } = {
     email: new Error(),
     password: new Error(),
     password_2: new Error(),
     login: new Error(),
-    exists: null
+    exists: null,
   };
   get email() {
     return this.email_;
@@ -89,13 +96,13 @@ export class SignUpComponent {
     if (!check.error) {
       return;
     }
-    return check.error.errors.map(({ message }) => message).join(";");
+    return check.error.errors.map(({ message }) => message).join('; ');
   }
   async submitForm() {
-    const response = await fetch("/signup", {
-      method: "POST",
+    const response = await fetch('/signup', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json;charset=utf-8",
+        'Content-Type': 'application/json;charset=utf-8',
       },
       body: JSON.stringify({
         login: this.login_,
@@ -103,16 +110,18 @@ export class SignUpComponent {
         email: this.email_,
       }),
     });
-    if(response.ok) {
-      console.log("A letter was sent to you")
+    if (response.ok) {
+      console.log('A letter was sent to you');
       //this.router.navigate(["/signin"])
-      return
+      return;
     }
-    const {code} = await response.json();
-    this.errors.exists = new Error(code)
+    const { code } = await response.json();
+    this.errors.exists = new Error(code);
   }
   nextStep() {
-    this.step++;
+    if (!this.stepWrong) {
+      this.step++;
+    }
   }
   previousStep() {
     this.step--;

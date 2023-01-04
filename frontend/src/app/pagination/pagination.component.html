@@ -1,10 +1,16 @@
 <div>
   <div>
+    <button (click)="page = 0" [disabled]="page == 0">&lt;</button>
     <button (click)="page = page - 1" [disabled]="page == 0">previous</button>
     <button *ngFor="let i of pages" [disabled]="i == page" (click)="page = i">
       {{ i + 1 }}
     </button>
-    <span *ngIf="pages.length < count">...</span>
     <button (click)="page = page + 1" [disabled]="lastPage">next</button>
+    <button
+      (click)="page = pages.length - 1"
+      [disabled]="page == pages.length - 1"
+    >
+      &gt;
+    </button>
   </div>
 </div>

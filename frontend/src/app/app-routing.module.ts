@@ -1,4 +1,4 @@
-import { NgModule, Injectable } from "@angular/core";
+import { NgModule, Injectable } from '@angular/core';
 import {
   RouterModule,
   Router,
@@ -6,45 +6,47 @@ import {
   CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
-} from "@angular/router";
+} from '@angular/router';
 
-import { LoginFormComponent } from "./login-form/login-form.component";
-import { SignUpComponent } from "./sign-up/sign-up.component";
-import { ItemsComponent } from "./items/items.component";
-import { ItemComponent } from "./item/item.component";
-import { ProfileComponent } from "./profile/profile.component";
+import { LoginFormComponent } from './login-form/login-form.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
+import { ItemsComponent } from './items/items.component';
+import { ItemComponent } from './item/item.component';
+import { MainPageComponent } from './main-page/main-page.component';
+import { ProfileComponent } from './profile/profile.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 class Permissions {
   canActivate(): boolean {
-    return !!localStorage.getItem("access_token");
+    return !!localStorage.getItem('access_token');
   }
 }
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 class CanActivateRoute implements CanActivate {
   constructor(private permissions: Permissions, private router: Router) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
+    state: RouterStateSnapshot
   ): boolean {
-    const mainPage = ["items"];
+    const mainPage = ['items'];
     const loggedIn = this.permissions.canActivate(),
       path = route.url[0].path;
     switch (path) {
-      case "login":
+      case 'login':
         if (loggedIn) {
           this.router.navigate(mainPage);
         }
         return !loggedIn;
-      case "signup":
+      case 'signup':
         if (loggedIn) {
           this.router.navigate(mainPage);
         }
         return !loggedIn;
-      case "profile":
+      case 'profile':
         if (!loggedIn) {
           this.router.navigate(mainPage);
         }
@@ -56,19 +58,20 @@ class CanActivateRoute implements CanActivate {
 }
 const routes: Routes = [
   {
-    path: "login",
+    path: 'login',
     component: LoginFormComponent,
     canActivate: [CanActivateRoute],
   },
-  { path: "signup", component: SignUpComponent },
-  { path: "items/:page", component: ItemsComponent },
-  { path: "items", component: ItemsComponent },
-  { path: "item/:id", component: ItemComponent },
+  { path: 'signup', component: SignUpComponent },
+  { path: 'items/:page', component: ItemsComponent },
+  { path: 'items', component: MainPageComponent },
+  { path: 'item/:id', component: ItemComponent },
   {
-    path: "profile",
+    path: 'profile',
     component: ProfileComponent,
     canActivate: [CanActivateRoute],
   },
+  { path: '**', pathMatch: 'full', component: NotFoundComponent },
 ];
 
 @NgModule({

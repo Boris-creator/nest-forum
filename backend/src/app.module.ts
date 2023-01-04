@@ -14,6 +14,7 @@ import { CommentsModule } from "./comments/comments.module";
 import { RolesModule } from "./roles/roles.module";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { frontend } from "./constants";
+import { ViewsModule } from './views/views.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { frontend } from "./constants";
     CommentsModule,
     RolesModule,
     NotificationsModule,
+    ViewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

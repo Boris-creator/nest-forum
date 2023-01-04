@@ -6,22 +6,35 @@
       <option value="not">not</option>
     </select>
   </div>
-  <div *ngFor="let item of items">
-    <h2 (click)="openItem(item.id)">{{ item.title }}</h2>
-    <div>
-      <button *ngIf="moder && !item.approved" (click)="approveItem(item)">
-        approve
-      </button>
+  <div class="wrapper">
+    <div class="items">
+      <div *ngFor="let item of items" class="item">
+        <h2 (click)="openItem(item.id)">{{ item.title }}</h2>
+        <h3>By {{item.author?.login ?? "Community"}}</h3>
+        <div>
+          <button *ngIf="moder && !item.approved" (click)="approveItem(item)">
+            approve
+          </button>
+        </div>
+      </div>
     </div>
+
+    <app-pagination
+      [items]="items"
+      [filters]="filters"
+      [count]="count"
+      [dataLoaded]="dataLoaded"
+      [refresh]="refresh"
+      (demand)="demand($event)"
+      (feed)="feed($event)"
+    ></app-pagination>
   </div>
-  <app-pagination
-    [items]="items"
-    [filters]="filters"
-    [count]="count"
-    [dataLoaded]="dataLoaded"
-    [refresh]="refresh"
-    (demand)="demand($event)"
-    (feed)="feed($event)"
-  ></app-pagination>
-  <app-item-redactor (creator)="addItem($event)"></app-item-redactor>
+  <div class="plusItem">
+    <button *ngIf="!editorOpen" (click)="editorOpen = true">+</button>
+    <app-item-redactor
+      *ngIf="editorOpen"
+      (creator)="addItem($event)"
+      (close)="editorOpen = false"
+    ></app-item-redactor>
+  </div>
 </div>

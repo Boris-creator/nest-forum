@@ -1,17 +1,32 @@
 <div>
-  <div [formGroup]="form">
-    <input formControlName="title" />
-    <textarea formControlName="text"></textarea>
-    <div
-      *ngIf="form.controls['title'].errors && form.controls['title'].touched"
-    >
-      {{ form.controls["title"].errors["errors"] }}
+  <div [formGroup]="form" class="form">
+    <input formControlName="title" (keyup.escape)="close()" autofocus />
+    <div class="error-msg">
+      <div
+        *ngIf="form.controls['title'].errors && form.controls['title'].touched"
+      >
+        {{ form.controls["title"].errors["errors"] }}
+      </div>
     </div>
-    <button
-      (click)="submit()"
-      [disabled]="form.controls['title'].errors || form.controls['text'].errors"
-    >
-      ok
-    </button>
+    <textarea formControlName="text"></textarea>
+    <div class="error-msg">
+      <div
+        *ngIf="form.controls['text'].errors && form.controls['text'].touched"
+        class="error-msg"
+      >
+        {{ form.controls["text"].errors["errors"] }}
+      </div>
+    </div>
+    <div class="actions">
+      <button (click)="close()">cancel</button>
+      <button
+        (click)="submit()"
+        [disabled]="
+          form.controls['title'].errors || form.controls['text'].errors
+        "
+      >
+        ok
+      </button>
+    </div>
   </div>
 </div>

@@ -4,9 +4,11 @@ import {
   Model,
   ForeignKey,
   BelongsTo,
+  HasMany,
   DataType,
 } from "sequelize-typescript";
 import { User } from "../user/user.entity";
+import { ItemView } from "../views/itemView.entity";
 @Table
 export class Item extends Model {
   @Column({ allowNull: false })
@@ -27,4 +29,7 @@ export class Item extends Model {
 
   @BelongsTo(() => User)
   author: User;
+
+  @HasMany(() => ItemView)
+  views: ItemView[];
 }

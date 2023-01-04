@@ -1,23 +1,26 @@
-import { Component, Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { schema } from "@common/validationSchema";
+import { Component, Injectable, ViewChild, ElementRef } from '@angular/core';
+import { Router } from '@angular/router';
+import { schema } from '@common/validationSchema';
 
-import { z as d } from "zod";
+import { z as d } from 'zod';
 
 @Component({
-  selector: "login-form",
-  templateUrl: "./login-form.component.html",
-  styleUrls: ["./login-form.component.scss"],
+  selector: 'login-form',
+  templateUrl: './login-form.component.html',
+  styleUrls: ['./login-form.component.scss'],
 })
 @Injectable()
 export class LoginFormComponent {
   constructor(private router: Router) {}
+  @ViewChild('email_') emailInput!: ElementRef;
   private email_!: string;
   private password_!: string;
+  private prefix = true ? 'api' : '';
   errors: { email: Error | null; password: Error | null } = {
     email: new Error(),
     password: new Error(),
   };
+
   /*
   @email({
     success: (ob: any, value: string) => {
@@ -44,7 +47,7 @@ export class LoginFormComponent {
       this.email_ = check.data;
     }
   }
-  
+
   get password() {
     return this.password_;
   }
@@ -56,32 +59,29 @@ export class LoginFormComponent {
     this.password_ = value;
   }
   async submitForm() {
-    const response = await fetch("/login", {
-      method: "POST",
+    const response = await fetch('/login', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json;charset=utf-8",
+        'Content-Type': 'application/json;charset=utf-8',
       },
       body: JSON.stringify({ email: this.email_, password: this.password_ }),
     });
     if (response.ok) {
       const { access_token } = await response.json();
-      localStorage.setItem("access_token", access_token);
-      this.router.navigate(["/items"]);
+      localStorage.setItem('access_token', access_token);
+      this.router.navigate(['/items']);
     } else {
-      console.log("Wrong...");
+      console.log('Wrong...');
     }
-    const r = await fetch("/hello", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-        Authorization: "access_token " + localStorage["access_token"],
-      },
-    });
   }
   displayErrors(check: d.SafeParseError<any>) {
     if (!check.error) {
       return;
     }
-    return check.error.errors.map(({ message }) => message).join(";");
+    return check.error.errors.map(({ message }) => message).join('; ');
+  }
+  ngAfterViewInit() {
+    //thou I could use 'autofocus' attribute.
+    this.emailInput.nativeElement.focus();
   }
 }

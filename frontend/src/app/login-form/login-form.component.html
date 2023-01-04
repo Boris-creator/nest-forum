@@ -1,12 +1,26 @@
 <div class="wrapper">
   <div class="form">
-    <a routerLink="/signup" routerLinkActive="active">sign up</a>
-    <input [(ngModel)]="email" type="email" />
-    <div *ngIf="errors.email">{{ errors.email.message }}</div>
-    <input [(ngModel)]="password" type="password" />
-    <div *ngIf="errors.password">{{ errors.password.message }}</div>
-    <button [disabled]="errors.email || errors.password" (click)="submitForm()">
-      click me
-    </button>
+    <div class="header">
+      <a routerLink="/signup" routerLinkActive="active">sign up</a>
+    </div>
+    <h1>Log in</h1>
+    <div class="formBody">
+      <label>
+        <span>Email</span>
+        <input [(ngModel)]="email" type="email" #email_ />
+        <div *ngIf="errors.email">{{ errors.email.message }}</div>
+      </label>
+      <label>
+        <span>Password</span>
+        <input [(ngModel)]="password" type="password" />
+        <div *ngIf="errors.password">{{ errors.password.message }}</div>
+      </label>
+      <button
+        [disabled]="errors.email || errors.password"
+        (click)="submitForm()"
+      >
+        log in
+      </button>
+    </div>
   </div>
 </div>

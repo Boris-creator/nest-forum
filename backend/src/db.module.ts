@@ -8,6 +8,7 @@ import { Comment } from "./comments/comments.entity";
 import { Role } from "./roles/roles.entity";
 import { UserRole } from "./roles/userRoles.entity";
 import { Notification } from "./notifications/notifications.entity";
+import { ItemView } from "./views/itemView.entity";
 import * as dotenv from "dotenv";
 dotenv.config();
 const { DB_USERNAME, DB_PASSWORD, DB_NAME } = process.env;
@@ -28,6 +29,7 @@ export const databaseProviders = [
         Role,
         UserRole,
         Notification,
+        ItemView,
       ]);
       await sequelize.sync();
       return sequelize;

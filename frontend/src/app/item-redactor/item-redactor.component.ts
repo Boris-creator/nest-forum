@@ -17,6 +17,8 @@ export class ItemRedactorComponent {
 
   @Output("creator")
   creator = new EventEmitter<{ title: string; body: { text: string } }>();
+  @Output("close")
+  closer = new EventEmitter<{save: boolean}>();
 
   @Input()
   title: string = "";
@@ -29,6 +31,9 @@ export class ItemRedactorComponent {
     const title = this.form.controls["title"].value,
       text = this.form.controls["text"].value;
     this.creator.emit({ title, body: { text } });
+  }
+  close() {
+    this.closer.emit({save: false})
   }
 
   ngOnInit() {
