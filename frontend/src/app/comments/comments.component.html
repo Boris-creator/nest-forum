@@ -1,6 +1,15 @@
-<div>
-    <div>
-        <textarea [(ngModel)]="content"></textarea>
-        <button (click)="add()">ok</button>
-    </div>
+<div class="wrapper">
+  <div>
+    <textarea
+      [(ngModel)]="content"
+      (keyup.escape)="cancel()"
+      rows="15"
+      autofocus
+      #input
+    ></textarea>
+  </div>
+  <div class="buttons">
+    <button [disabled]="!content.length" (click)="clear()">clear</button>
+    <button (click)="add()" [disabled]="!valid">ok</button>
+  </div>
 </div>

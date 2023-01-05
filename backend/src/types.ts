@@ -45,3 +45,6 @@ export type userData = {
   roles: string[];
   permissions: string[];
 };
+export type userGrade = {
+  raiting: number,
+};

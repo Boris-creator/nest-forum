@@ -22,3 +22,21 @@ button {
   line-height: 1em;
   margin-top: 0.2em;
 }
+.outline {
+  border: thin solid silver;
+}
+@for $m from 1 through 6 {
+  $margin: 1em * $m;
+  .mb-#{$m} {
+    margin-bottom: $margin;
+  }
+  .mt-#{$m} {
+    margin-top: $margin;
+  }
+  .my-#{$m} {
+    margin: $margin 0;
+  }
+  .mx-#{m} {
+    margin: 0 $margin;
+  }
+}

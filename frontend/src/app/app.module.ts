@@ -19,6 +19,7 @@ import { PaginationComponent } from './pagination/pagination.component';
 import { ProfileComponent } from './profile/profile.component';
 import { MainPageComponent } from './main-page/main-page.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { RaitingComponent } from './raiting/raiting.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -34,6 +35,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
     ProfileComponent,
     MainPageComponent,
     NotFoundComponent,
+    RaitingComponent,
   ],
   imports: [
     BrowserModule,

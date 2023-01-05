@@ -21,7 +21,7 @@ export class Item extends Model {
   @Column({ allowNull: true })
   userId: number;
 
-  @Column({ allowNull: true })
+  @Column({ allowNull: true, type: DataType.FLOAT })
   raiting: number;
 
   @Column({ allowNull: false })

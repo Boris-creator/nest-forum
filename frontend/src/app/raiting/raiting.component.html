@@ -1,0 +1,35 @@
+<div>
+  <div>
+    <svg viewBox="0 0 300 30" preserveAspectRatio="xMidYMid meet">
+      <linearGradient id="grad">
+        <stop
+          [attr.offset]="(1 - ceil + raiting) * 100 + '%'"
+          stop-color="gold"
+        ></stop>
+        <stop
+          [attr.offset]="(1 - ceil + raiting) * 100 + '%'"
+          stop-color="transparent"
+        ></stop>
+      </linearGradient>
+      <rect
+        *ngFor="let s of stars"
+        class="star"
+        [class.myGrade]="s == previous"
+        [attr.x]="10 + (200 / (max + 1) + 10) * s"
+        y="5"
+        [attr.width]="200 / (max + 1)"
+        height="20"
+        [attr.fill]="
+          s < raiting
+            ? 'gold'
+            : s == ceil
+            ? 'url(\'#grad\')'
+            : 'transparent'
+        "
+        stroke="gold"
+        stroke-width="2"
+        (click)="estimate(s)"
+      />
+    </svg>
+  </div>
+</div>

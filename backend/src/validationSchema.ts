@@ -70,6 +70,7 @@ export const schema = {
     itemId: d.number().min(1),
     commentId: d.any(),
   }),
+  commentContent,
   itemTitle,
   itemText,
   item: d.object({

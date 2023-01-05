@@ -1,0 +1,14 @@
+.wrapper {
+  width: 70vw;
+  margin: 0 auto;
+  @media (max-width: 768px) {
+    width: 100vw;
+  }
+}
+.item {
+  padding: 1em;
+}
+.raiting-wrapper {
+  width: 12em;
+  margin: 1em 0;
+}

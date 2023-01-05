@@ -1,0 +1,22 @@
+textarea {
+  resize: none;
+  width: 100%;
+  padding: 1em;
+}
+.wrapper {
+  width: 30vw;
+  background: white;
+  @media screen and (max-width: 900px) {
+    width: 70vw;
+    textarea {
+      height: 5em;
+    }
+  }
+}
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  button {
+    margin-left: 1em;
+  }
+}

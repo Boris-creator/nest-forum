@@ -1,28 +1,35 @@
-<div>
-  <div *ngIf="errorMessage">{{ errorMessage }}</div>
-  <div *ngIf="commentToAnswer">
-    <button (click)="answerTo(null)">cancel</button>
-  </div>
-  <app-comments (add)="addComment($event)"></app-comments>
-  <div>
-    <div *ngFor="let comment of comments" [id]="comment.id">
-      <div *ngIf="comment.commentId">
-        <a (click)="navigateTo(comment.commentId)">in answer to</a>
+<div class="wrapper">
+  <div class="comments" #commentsContainer>
+    <div
+      *ngFor="let comment of comments"
+      class="comment"
+      [id]="'comment-' + comment.id"
+    >
+      <div *ngIf="comment.answerTo && comment.commentId" class="citate">
+        <a (click)="navigateTo(comment.commentId)"
+          >in answer to {{ comment.answerTo.author.login }}</a
+        >
       </div>
       <app-comments
         *ngIf="commentToEdit == comment.id; else showComment"
         [content]="comment.content"
         (add)="editComment({ content: $event.content, id: comment.id })"
+        (cancel)="commentToEdit = null"
       ></app-comments>
       <ng-template #showComment>
         <div>
           <h3>{{ comment.author.login }}</h3>
-          <img [src]="'assets/avatars/' + comment.author.id + '_default.png'" class="avatar">
-          <div>{{ comment.content }}</div>
-          <div>{{ comment.createdAt.toLocaleString() }}</div>
+          <img
+            [src]="'assets/avatars/' + comment.author.id + '_default.png'"
+            class="avatar"
+          />
+          <div class="content my-2">{{ comment.content }}</div>
+          <div class="date my-1">
+            {{ comment.createdAt.toLocaleDateString() }}
+          </div>
         </div>
-        <div>
-          <button (click)="answerTo(comment.id)">answer</button>
+        <div class="buttons">
+          <button (click)="answerTo(comment)">answer</button>
           <button
             *ngIf="comments_permissions[comment.id].edit"
             (click)="commentToEdit = comment.id"
@@ -38,5 +45,16 @@
         </div>
       </ng-template>
     </div>
+  </div>
+  <div class="new-comment">
+    <div *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</div>
+    <div *ngIf="commentToAnswer" class="answer-data">
+      <div>In answer to {{ commentToAnswer.author.login }}</div>
+      <button (click)="answerTo(null)">cancel</button>
+    </div>
+    <app-comments
+      [answerTo]="commentToAnswer?.id"
+      (add)="addComment($event)"
+    ></app-comments>
   </div>
 </div>

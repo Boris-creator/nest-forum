@@ -55,9 +55,11 @@ export class ItemsController {
   @UseGuards(GuardOne)
   async getById(
     @Param() data: { id: number },
-    @User(["id"]) user: { id: number },
+    @User(["id"]) user: { id?: number },
   ): Promise<item> {
-    await this.stats.addView(data.id, user.id);
+    if (user.id) {
+      await this.stats.addView(data.id, user.id);
+    }
     return await this.appService.getById(data.id);
   }
   @UseGuards(JwtGuard)

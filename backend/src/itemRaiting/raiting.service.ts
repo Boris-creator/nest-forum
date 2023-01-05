@@ -11,7 +11,7 @@ export class RaitingService {
     userId: number,
     itemId: number,
     value: number,
-  ): Promise<boolean> {
+  ): Promise<{ raiting: number } | null> {
     try {
       await this.raiting.upsert({
         value,
@@ -20,10 +20,10 @@ export class RaitingService {
       });
     } catch (e) {
       console.error(e);
-      return false;
+      return null;
     }
-    await this.updateRaiting(itemId);
-    return true;
+
+    return { raiting: await this.updateRaiting(itemId) };
   }
   async updateRaiting(itemId: number) {
     const stars = await this.raiting.findAll({
@@ -31,9 +31,15 @@ export class RaitingService {
     });
     const median =
       stars.reduce((acc, { value }) => acc + value, 0) / stars.length;
-    return await this.item.update(
-      { raiting: median },
-      { where: { id: itemId } },
-    );
+    await this.item.update({ raiting: median }, { where: { id: itemId } });
+    return median;
+  }
+  async getGrade(userId: number, itemId: number) {
+    return await this.raiting.findOne({
+      where: {
+        userId,
+        itemId,
+      },
+    });
   }
 }
