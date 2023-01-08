@@ -4,6 +4,10 @@ import { Comment } from "./comments.entity";
 import { User } from "../user/user.entity";
 import { Notify } from "../notifications/notifications.enum";
 import { newComment as comment, editComment } from "../types";
+import { frontend } from "../constants";
+import * as fs from "fs/promises";
+import { join } from "path";
+
 export type newComment = comment & {
   userId: number; //author
 };
@@ -13,9 +17,38 @@ export class CommentsService {
     @Inject("COMMENT_REPOSITORY") private comment: typeof Comment,
     private emitter: EventEmitter2,
   ) {}
-  async add(data: newComment) {
+
+  private uploadsFolder = join(
+    __dirname,
+    "..",
+    ...frontend,
+    "src",
+    "assets",
+    "uploads",
+  );
+  async add(data: newComment, files: Express.Multer.File[]) {
+    const safeNames = files.reduce(
+      (a, f) => ({
+        ...a,
+        [f.fieldname]: `${Date.now()}_${data.userId}_${data.itemId}_${
+          f.fieldname
+        }.${f.originalname.replace(/.+\./, "")}`, //I don't want to use originalname
+      }),
+      {},
+    );
     try {
-      return await this.comment.create(data);
+      await Promise.all(
+        files.map((file) => {
+          fs.writeFile(
+            join(this.uploadsFolder, safeNames[file.fieldname]),
+            file.buffer,
+          );
+        }),
+      );
+      return await this.comment.create({
+        ...data,
+        files: Object.values(safeNames),
+      });
     } catch (err) {
       console.log(err);
       return null;
@@ -51,6 +84,9 @@ export class CommentsService {
     const { id } = filter;
     //it should be paranoid
     const comment = await this.comment.findByPk(id);
+    await Promise.all(
+      comment.files.map((file) => fs.unlink(join(this.uploadsFolder, file))),
+    );
     const num = await this.comment.destroy({
       where: { id },
     });

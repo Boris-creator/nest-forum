@@ -53,3 +53,11 @@
   border-bottom: thin solid silver;
   cursor: pointer;
 }
+.attachments {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  img {
+    width: 30%;
+  }
+}

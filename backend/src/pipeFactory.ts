@@ -18,3 +18,23 @@ export class ValidationPipe implements PipeTransform {
     return check.data;
   }
 }
+@Injectable()
+export class MultiValidationPipe implements PipeTransform {
+  constructor(fields: { key: string; schema: d.Schema }) {
+    this.schema = fields.schema;
+    this.field = fields.key;
+  }
+  schema: d.Schema;
+  field: string;
+  transform(value: any) {
+    const v = JSON.parse(value[this.field]);
+    const check = this.schema.safeParse(v);
+    if (check.success == false) {
+      throw new BadRequestException(
+        { code: 1, error: check.error.message },
+        "Wrong format",
+      );
+    }
+    return check.data;
+  }
+}

@@ -1,25 +1,46 @@
-import { Controller, Post, Body, UseGuards, Catch } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  UseInterceptors,
+  UploadedFiles,
+  ParseFilePipe,
+} from "@nestjs/common";
 import { JwtGuard } from "../auth/auth.guard";
 import { User } from "../auth/auth.decorator";
 import { newComment, CommentsService } from "./comments.service";
 import { RoleGuard } from "../roles/roles.guard";
 import { EditGuard, AddGuard } from "./comments.guard";
 import { permissions } from "../roles/permissions.constants";
-import { ValidationPipe } from "../pipeFactory";
+import { ValidationPipe, MultiValidationPipe } from "../pipeFactory";
 import { schema } from "../validationSchema";
 import { editComment } from "../types";
+import { FilesInterceptor } from "@nestjs/platform-express";
+import { FileTypeValidator } from "./fileValidator";
 
 @Controller("comment")
 export class CommentsController {
   constructor(private service: CommentsService) {}
+
   @Post("add")
   @UseGuards(JwtGuard, AddGuard)
+  //@UseInterceptors(FilesInterceptor("files")) //already got the files array in guard.
   async add(
-    @Body(new ValidationPipe(schema.comment)) comment: newComment,
+    @Body(new MultiValidationPipe({ key: "comment", schema: schema.comment }))
+    comment: newComment,
     @User(["id", "username"]) user: { id: number; username: string },
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
+        ],
+      }),
+    )
+    files: Express.Multer.File[],
   ) {
     comment.userId = user.id;
-    const res = await this.service.add(comment);
+    const res = await this.service.add(comment, files);
     if (!res) {
       return null;
     }

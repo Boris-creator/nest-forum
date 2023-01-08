@@ -4,6 +4,7 @@ import { CommentsService } from "./comments.service";
 import { ItemsService } from "../items/items.service";
 import { RoleGuard } from "../roles/roles.guard";
 import { editCommentMaxTime as maxAge } from "../constants";
+import * as multer from "multer";
 @Injectable()
 export class EditGuard extends RoleGuard implements CanActivate {
   constructor(private service: CommentsService) {
@@ -28,8 +29,20 @@ export class EditGuard extends RoleGuard implements CanActivate {
 export class AddGuard implements CanActivate {
   constructor(private service: ItemsService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
-    const item = await this.service.findOne(req.body.itemId);
+    const req = context.switchToHttp().getRequest(),
+      res = context.switchToHttp().getResponse();
+    const multiReq: { body: any } = await new Promise((r) => {
+      multer().any()(req, res, () => {
+        r(req);
+      });
+    });
+    let comment;
+    try {
+      comment = JSON.parse(multiReq.body.comment);
+    } catch (err) {
+      return false;
+    }
+    const item = await this.service.findOne(comment.itemId);
     if (!item) {
       return false;
     }

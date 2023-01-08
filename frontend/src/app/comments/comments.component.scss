@@ -3,6 +3,26 @@ textarea {
   width: 100%;
   padding: 1em;
 }
+input[type="file"] {
+  display: none;
+}
+.thumbnails {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  overflow-x: scroll;
+  .thumbnail {
+    display: flex;
+    width: 5em;
+    margin: 0 0.5em;
+    img {
+      width: 80%;
+    }
+    .closer {
+      cursor: pointer;
+    }
+  }
+}
 .wrapper {
   width: 30vw;
   background: white;
@@ -16,7 +36,11 @@ textarea {
 .buttons {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   button {
     margin-left: 1em;
+  }
+  span {
+    cursor: pointer;
   }
 }

@@ -8,6 +8,10 @@ export class HttpHelper {
         "Content-Type": "application/json",
         Authorization: "access_token " + localStorage["access_token"],
       }),
+      multiHeaders: new HttpHeaders({
+        //"Content-Type": "multipart/form-data",
+        Authorization: "access_token " + localStorage["access_token"],
+      })
     };
   }
 }

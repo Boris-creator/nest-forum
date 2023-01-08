@@ -2,6 +2,7 @@ import {
   Table,
   Model,
   Column,
+  DataType,
   ForeignKey,
   BelongsTo,
 } from "sequelize-typescript";
@@ -12,6 +13,9 @@ import { User } from "../user/user.entity";
 export class Comment extends Model {
   @Column({ allowNull: false })
   content: string;
+
+  @Column({ type: DataType.JSON })
+  files: string[];
 
   @ForeignKey(() => User)
   @Column({ allowNull: false })

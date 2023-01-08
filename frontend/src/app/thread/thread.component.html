@@ -10,12 +10,15 @@
           >in answer to {{ comment.answerTo.author.login }}</a
         >
       </div>
-      <app-comments
-        *ngIf="commentToEdit == comment.id; else showComment"
-        [content]="comment.content"
-        (add)="editComment({ content: $event.content, id: comment.id })"
-        (cancel)="commentToEdit = null"
-      ></app-comments>
+      <div *ngIf="commentToEdit == comment.id; else showComment">
+        <div *ngIf="errors.edit" class="error-msg">{{ errorMessages.edit }}</div>
+        <app-comments
+          [content]="comment.content"
+          [success]="editSaved"
+          (add)="editComment({ content: $event.content, id: comment.id })"
+          (cancel)="cancelEdit()"
+        ></app-comments>
+      </div>
       <ng-template #showComment>
         <div>
           <h3>{{ comment.author.login }}</h3>
@@ -24,6 +27,12 @@
             class="avatar"
           />
           <div class="content my-2">{{ comment.content }}</div>
+          <div *ngIf="comment.files.length" class="attachments">
+            <img
+              *ngFor="let file of comment.files"
+              [src]="'assets/uploads/' + file"
+            />
+          </div>
           <div class="date my-1">
             {{ comment.createdAt.toLocaleDateString() }}
           </div>
@@ -47,13 +56,14 @@
     </div>
   </div>
   <div class="new-comment">
-    <div *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</div>
+    <div *ngIf="errors.add" class="error-msg">{{ errorMessages.add }}</div>
     <div *ngIf="commentToAnswer" class="answer-data">
       <div>In answer to {{ commentToAnswer.author.login }}</div>
       <button (click)="answerTo(null)">cancel</button>
     </div>
     <app-comments
       [answerTo]="commentToAnswer?.id"
+      [success]="commentSaved"
       (add)="addComment($event)"
     ></app-comments>
   </div>

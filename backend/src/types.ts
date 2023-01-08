@@ -24,6 +24,7 @@ export type comment = {
     login: string;
     id?: number;
   };
+  files: string[];
   content: string;
   commentId: number | null; //answerTo
   createdAt: Date;
@@ -46,5 +47,5 @@ export type userData = {
   permissions: string[];
 };
 export type userGrade = {
-  raiting: number,
+  raiting: number;
 };

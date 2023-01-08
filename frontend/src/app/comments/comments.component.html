@@ -3,13 +3,33 @@
     <textarea
       [(ngModel)]="content"
       (keyup.escape)="cancel()"
-      rows="15"
+      (paste)="pasteFile($event)"
+      rows="10"
       autofocus
       #input
     ></textarea>
   </div>
   <div class="buttons">
+    <label>
+      <input
+        type="file"
+        multiple
+        accept="image/*"
+        (change)="selectFiles($event)"
+      />
+      <span>file</span>
+    </label>
     <button [disabled]="!content.length" (click)="clear()">clear</button>
     <button (click)="add()" [disabled]="!valid">ok</button>
+  </div>
+  <div class="thumbnails" *ngIf="previews.length">
+    <div
+      *ngFor="let view of previews"
+      (click)="deleteFile(view.file)"
+      class="thumbnail"
+    >
+      <img [src]="view.src" />
+      <span class="closer">&#9587;</span>
+    </div>
   </div>
 </div>

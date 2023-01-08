@@ -10,6 +10,7 @@ import { HttpHelper } from "../http.service";
 import { Helper } from "../permissions.service";
 
 import { comment as comment_, newComment, editComment } from "@common/types";
+import { codes as errorCodes } from "@common/errorCodes";
 import { editCommentMaxTime } from "@common/constants";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 
@@ -33,23 +34,11 @@ export class ThreadComponent {
   @Input()
   itemId!: number;
 
-  comments: comment[] = [
-    /*
-    {
-      id: 1,
-      itemId: 1,
-      userId: 1,
-      author: {
-        login: "Boris",
-      },
-      content: "Test content",
-      commentId: null,
-      createdAt: new Date(),
-    },
-    */
-  ];
+  comments: comment[] = [];
   commentToAnswer?: comment | null;
   commentToEdit: number | null = null;
+  commentSaved!: boolean;
+  editSaved!: boolean;
   private events = new EventEmitter();
   get comments_permissions() {
     const user = this.rolesHelper.decode();
@@ -77,11 +66,34 @@ export class ThreadComponent {
     deleteOne: this.urlPrefix + "/delete",
   };
   private httpOptions = this.httpHelper.options;
-  private errorMessages: { [key: number]: string } = {
-    400: "Your message is too short",
-    403: "Log in if you want to post your comments",
+
+  errors: {
+    add: { type: number; data?: any } | null;
+    edit: { type: number; data?: any } | null;
+  } = {
+    add: null,
+    edit: null,
   };
-  errorMessage: string | null = null;
+  get errorMessages() {
+    const { add, edit } = this.errors;
+    return {
+      add: add
+        ? {
+            1: "You have not rights to add comments.",
+            2: "Your comment is too short",
+            3: `Some of your files has wrong format: ${add.data?.files.join(
+              ", "
+            )}`,
+          }[add.type]
+        : "",
+      edit: edit
+        ? {
+            1: "You have not rights to edit the comment.",
+            2: "Your comment is too short",
+          }[edit.type]
+        : "",
+    };
+  }
   private transformUtil =
     (comments: comment[]) =>
     (comment: comment): comment_ => {
@@ -102,22 +114,42 @@ export class ThreadComponent {
       .querySelector("#comment-" + commentId)
       ?.scrollIntoView();
   }
-  addComment(comment: { content: string }) {
+  addComment(comment: { content: string; files?: File[] }) {
     const newComment: newComment = {
       content: comment.content,
       itemId: this.itemId,
       commentId: this.commentToAnswer?.id || null,
     };
+    const fData = new FormData();
+    fData.append("comment", JSON.stringify(newComment));
+    if (comment.files) {
+      comment.files.forEach((file, i) => {
+        fData.append(`file_${i}`, file);
+      });
+    }
     const req: Observable<comment> = this.http
-      .post<comment>(this.urls.add, newComment, this.httpOptions)
+      .post<comment>(this.urls.add, fData, {
+        headers: this.httpOptions.multiHeaders,
+      })
       .pipe(map(this.transformUtil(this.comments)));
+    this.commentSaved = false;
     req.subscribe({
       next: (res) => {
         this.comments.push(res);
         this.events.emit("add");
       },
       error: (err) => {
-        this.errorMessage = this.errorMessages[err.status] || null;
+        if (err.status == 403) {
+          this.errors.add = { type: 1 };
+        }
+        if (err.status == 400) {
+          if (err.error.code == errorCodes.FILE_FORMAT_ERR) {
+            this.errors.add = { type: 3, data: err.error };
+          }
+          if (err.error.code == errorCodes.FORMAT_ERR) {
+            this.errors.add = { type: 2 };
+          }
+        }
       },
     });
   }
@@ -125,14 +157,16 @@ export class ThreadComponent {
     const req: Observable<any> = this.http
       .post<any>(this.urls.edit, comment, this.httpOptions)
       .pipe();
+    this.editSaved = false;
     req.subscribe({
       next: (res) => {
         const c = this.comments.find(({ id }) => id == comment.id);
         c && (c.content = comment.content);
         this.commentToEdit = null;
+        this.editSaved = true;
       },
       error: (err) => {
-        console.log(err);
+        this.errors.edit = { type: err.status == 403 ? 1 : 2 };
       },
     });
   }
@@ -166,12 +200,18 @@ export class ThreadComponent {
       },
     });
   }
+  cancelEdit() {
+    this.commentToEdit = null;
+    this.events.emit("cancelEdit");
+  }
   ngOnInit() {
     this.getComments();
     this.events.subscribe({
       next: (e: string) => {
         const block = this.block.nativeElement;
         if (e == "add") {
+          this.commentSaved = true;
+          this.errors.add = null;
           requestAnimationFrame(() => {
             block.querySelector(".comment:last-child").scrollIntoView({
               behavior: "smooth",
@@ -187,6 +227,9 @@ export class ThreadComponent {
         }
         if (e == "answer") {
           //block.querySelector()
+        }
+        if (e == "cancelEdit") {
+          this.errors.edit = null;
         }
       },
     });

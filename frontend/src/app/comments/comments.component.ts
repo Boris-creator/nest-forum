@@ -11,6 +11,7 @@ import {
 import { schema } from "@common/validationSchema";
 export type comment = {
   content: string;
+  files?: File[];
 };
 @Injectable()
 @Component({
@@ -20,6 +21,8 @@ export type comment = {
 })
 export class CommentsComponent {
   //@Input()itemId!: number;
+  @Input()
+  success!: boolean;
   @Input()
   answerTo?: number;
   @Input()
@@ -31,10 +34,44 @@ export class CommentsComponent {
   @ViewChild("input")
   input!: ElementRef;
 
+  files: File[] = [];
+  previews: { src: string; file: File }[] = [];
+
   get valid() {
     return schema.commentContent.safeParse(this.content).success;
   }
 
+  selectFiles(ev: Event) {
+    const input = ev.target as HTMLInputElement;
+    const newFiles = Array.from(input.files || []);
+    for (let file of newFiles) {
+      this.addFile(file);
+    }
+  }
+  addFile(file: File) {
+    this.files.push(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previews.push({ src: reader.result as string, file });
+    };
+    reader.readAsDataURL(file);
+  }
+  pasteFile(event: ClipboardEvent) {
+    const items: File[] = Array.from(event.clipboardData?.files || []);
+    const file = items[0] || null;
+    if (!file) {
+      return;
+    }
+    this.addFile(file);
+  }
+  deleteFile(file: File) {
+    const { files, previews } = this;
+    files.splice(files.indexOf(file), 1);
+    previews.splice(
+      previews.findIndex(({ file: f }) => f == file),
+      1
+    );
+  }
   //add(comment: comment): Observable<comment> {
   add() {
     if (!this.valid) {
@@ -42,8 +79,9 @@ export class CommentsComponent {
     }
     this.comment.emit({
       content: this.content,
+      files: this.files,
     });
-    this.clear();
+    //this.clear();
   }
   cancel() {
     this.escape.emit();
@@ -51,10 +89,15 @@ export class CommentsComponent {
   }
   clear() {
     this.content = "";
+    this.files.length = 0;
+    this.previews.length = 0
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["answerTo"] && changes["answerTo"].currentValue) {
       this.input.nativeElement.focus();
+    }
+    if (changes["success"] && changes["success"].currentValue) {
+      this.clear()
     }
   }
 }
