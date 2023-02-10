@@ -1,6 +1,4 @@
 <div>
-  <div *ngIf="userId" class="header">
-    <img [src]="'assets/avatars/' + userId + '_default.png'" class="avatar" />
-  </div>
+  <app-main-menu [userId]="userId"></app-main-menu>
   <app-items></app-items>
 </div>

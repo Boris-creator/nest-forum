@@ -6,7 +6,7 @@ import { Notify } from "../notifications/notifications.enum";
 import { newComment as comment, editComment } from "../types";
 import { frontend } from "../constants";
 import * as fs from "fs/promises";
-import { join } from "path";
+import { join, extname } from "path";
 
 export type newComment = comment & {
   userId: number; //author
@@ -32,7 +32,7 @@ export class CommentsService {
         ...a,
         [f.fieldname]: `${Date.now()}_${data.userId}_${data.itemId}_${
           f.fieldname
-        }.${f.originalname.replace(/.+\./, "")}`, //I don't want to use originalname
+        }.${extname(f.originalname)}`, //I don't want to use originalname
       }),
       {},
     );

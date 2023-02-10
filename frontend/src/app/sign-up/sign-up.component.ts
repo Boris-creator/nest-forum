@@ -1,11 +1,11 @@
-import { Component, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { schema } from '@common/validationSchema';
-import { z as d } from 'zod';
+import { Component, Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { schema } from "@common/validationSchema";
+import { z as d } from "zod";
 @Component({
-  selector: 'login-form',
-  templateUrl: './sign-up.component.html',
-  styleUrls: ['./sign-up.component.scss'],
+  selector: "login-form",
+  templateUrl: "./sign-up.component.html",
+  styleUrls: ["./sign-up.component.scss"],
 })
 @Injectable()
 export class SignUpComponent {
@@ -21,12 +21,13 @@ export class SignUpComponent {
   }
   get steps() {
     return [
-      {complete: !this.errors.email},
-      {complete: !this.errors.password && !this.errors.password_2},
-      {complete: !this.errors.login}
-    ]
+      { complete: !this.errors.email },
+      { complete: !this.errors.password && !this.errors.password_2 },
+      { complete: !this.errors.login },
+    ];
   }
   error_messages = {};
+  success: boolean = false;
   errors: {
     email: Error | null;
     password: Error | null;
@@ -96,13 +97,14 @@ export class SignUpComponent {
     if (!check.error) {
       return;
     }
-    return check.error.errors.map(({ message }) => message).join('; ');
+    return check.error.errors.map(({ message }) => message).join("; ");
   }
   async submitForm() {
-    const response = await fetch('/signup', {
-      method: 'POST',
+    //demonstrates the native fetch at work. To do: use http.
+    const response = await fetch("/signup", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json;charset=utf-8',
+        "Content-Type": "application/json;charset=utf-8",
       },
       body: JSON.stringify({
         login: this.login_,
@@ -111,12 +113,14 @@ export class SignUpComponent {
       }),
     });
     if (response.ok) {
-      console.log('A letter was sent to you');
+      this.errors.exists = null;
+      this.success = true;
       //this.router.navigate(["/signin"])
       return;
     }
-    const { code } = await response.json();
-    this.errors.exists = new Error(code);
+    const { msg } = await response.json();
+    this.errors.exists = new Error(msg);
+    this.success = false;
   }
   nextStep() {
     if (!this.stepWrong) {

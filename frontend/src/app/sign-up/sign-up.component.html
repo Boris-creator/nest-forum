@@ -4,7 +4,7 @@
       <a routerLink="/login" routerLinkActive="active">log in</a>
     </div>
     <h1>Sign up</h1>
-    <div class="formBody">
+    <form class="formBody">
       <div [ngSwitch]="step">
         <div *ngSwitchCase="0">
           <label>
@@ -21,12 +21,20 @@
         <div *ngSwitchCase="1" class="passwords">
           <label>
             <span>Pick a password</span>
-            <input [(ngModel)]="password" type="password" />
+            <input
+              [(ngModel)]="password"
+              type="password"
+              autocomplete="new-password"
+            />
             <div *ngIf="errors.password">{{ errors.password.message }}</div>
           </label>
           <label>
             <span>Repeat your password</span>
-            <input [(ngModel)]="password_2" type="password" />
+            <input
+              [(ngModel)]="password_2"
+              type="password"
+              autocomplete="new-password"
+            />
             <div *ngIf="errors.password_2">{{ errors.password_2.message }}</div>
           </label>
         </div>
@@ -45,16 +53,24 @@
           *ngIf="step < 2; else submit"
           [disabled]="stepWrong"
           (click)="nextStep()"
+          type="button"
         >
           next
         </button>
         <ng-template #submit>
-          <button [disabled]="errors.login" (click)="submitForm()">
+          <button
+            [disabled]="errors.login"
+            (click)="submitForm()"
+            type="button"
+          >
             Finish
           </button>
         </ng-template>
       </div>
-      <div *ngIf="errors.exists">{{ errors.exists.message }}</div>
+      <div *ngIf="errors.exists" class="error-msg">
+        {{ errors.exists.message }}
+      </div>
+      <div *ngIf="success">A verification letter was sent to you</div>
       <div class="diagram">
         <svg
           viewBox="0 0 160 30"
@@ -88,6 +104,6 @@
           />
         </svg>
       </div>
-    </div>
+    </form>
   </div>
 </div>

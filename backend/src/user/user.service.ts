@@ -2,6 +2,7 @@ import { Injectable, Inject } from "@nestjs/common";
 import { User } from "./user.entity";
 import { Unverified } from "./unverifiedUser.entity";
 import { Role } from "../roles/roles.entity";
+import * as sequelize from "sequelize";
 export type user = {
   email: string;
   password: string;
@@ -25,7 +26,15 @@ export class UserService {
     });
   }
   async findByLogin(login: string): Promise<user | null> {
-    return await this.user.findOne({ where: { login } });
+    return await this.user.findOne({
+      where: {
+        login: sequelize.where(
+          sequelize.fn("LOWER", sequelize.col("login")),
+          "LIKE",
+          `%${login.toLowerCase()}%`,
+        ),
+      },
+    });
   }
   async createUser(data: user) {
     return await this.user.create(data);
